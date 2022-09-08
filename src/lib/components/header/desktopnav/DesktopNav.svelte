@@ -1,7 +1,7 @@
 <nav class="flex align">
   <a href="/products">Products</a>
   <a href="/about">About</a>
-  <button>Order</button>
+  <button class="button">Order</button>
 </nav>
 
 <style>
@@ -10,6 +10,9 @@
   }
   a:first-of-type {
     margin-left: auto;
+  }
+  a:hover {
+    color: var(--primary-color);
   }
 
   nav {

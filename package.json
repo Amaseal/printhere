@@ -17,6 +17,7 @@
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "^4.3.1",
+		"bcrypt": "^5.0.1",
 		"svelte-material-icons": "^2.0.4"
 	}
 }

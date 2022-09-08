@@ -1,7 +1,7 @@
 <script>
   import DesktopNav from "$lib/components/header/desktopnav/DesktopNav.svelte";
-  import CartOutline from "svelte-material-icons/CartOutline.svelte";
   import MobileNav from "$lib/components/header/mobilenav/MobileNav.svelte";
+  import CartOutline from "svelte-material-icons/CartOutline.svelte";
 
   let width;
   let size = "1.5em";
@@ -12,7 +12,7 @@
 <header>
   <div class="container flex align">
     <a href="/">
-      <img src="./logo.svg" alt="PrintHere logo" />
+      <img src="../logo.svg" alt="PrintHere logo" />
     </a>
 
     {#if width > 900}
@@ -28,6 +28,11 @@
 </header>
 
 <style>
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+  }
   img {
     width: 180px;
   }
@@ -40,6 +45,7 @@
     cursor: pointer;
     background-color: transparent;
     margin-left: 10px;
+    border: none;
   }
   .cart:hover {
     background-color: var(--secondary-color);

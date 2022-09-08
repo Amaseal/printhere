@@ -12,6 +12,7 @@
 body {
   font-family: var(--font);
   scroll-behavior: smooth;
+  background-color: var(--background);
 }
 
 *,
@@ -22,23 +23,30 @@ body {
   box-sizing: border-box;
 }
 
+h1 {
+  font-size: 80px;
+  line-height: 1.1;
+}
+
 a {
   color: var(--text);
   text-decoration: none;
 }
-button {
+.button {
   font-size: 16px;
   padding: 10px 20px;
   border-radius: 5px;
   background-color: var(--primary-color);
   border: none;
   font-weight: 600;
+  cursor: pointer;
 }
 
 .container {
   max-width: 1450px;
   padding: 15px;
   margin: 0 auto;
+  height: inherit;
 }
 
 .flex {
@@ -50,6 +58,28 @@ button {
 .align {
   align-items: center;
 }
+.strecth {
+  align-items: stretch;
+}
+
 .collumn {
   flex-direction: column;
+}
+.form {
+  height: 100vh;
+}
+
+input,
+textarea {
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid var(--primary-color);
+  width: 100%;
+}
+
+.loginform {
+  width: 40%;
+  padding: 90px;
+  background-color: white;
+  border-radius: 20px;
 }
