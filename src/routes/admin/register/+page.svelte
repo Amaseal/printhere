@@ -1,59 +1,47 @@
 <script>
-  import { send } from "$lib/scripts/api";
-
-  // these props are passed from the page endpoint
-  // so the user can get feedback if JavaScript doesn't work
-  export let error;
-  export let success;
-
-  // this runs on the client when JavaScript is available
-  // so we can just reuse the existing `error` and `success` props
-  async function register(event) {
-    error = "";
-
-    const formEl = event.target;
-    const response = await send(formEl);
-
-    if (response.error) {
-      error = response.error;
-    }
-
-    if (response.success) {
-      success = response.success;
-    }
-
-    formEl.reset(); // using the web platform 💪
-  }
+  import { enhance } from "$app/forms";
+  export let form;
 </script>
 
-<section>
-  <div class="container flex collumn align" />
-  <form on:submit|preventDefault={register} method="post">
-    <div>
-      <label for="username">Username</label>
-      <input id="username" name="username" type="text" required />
-    </div>
+<section class="form">
+  <div class="container flex collumn align justify">
+    <form class="loginform flex collumn stretch" method="POST" use:enhance>
+      <img src="../logo.svg" alt="" />
+      <div class="flex collumn ">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required />
+      </div>
 
-    <div>
-      <label for="password">Password</label>
-      <input id="password" name="password" type="password" required />
-    </div>
+      <div class="flex collumn ">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required />
+      </div>
 
-    {#if error}
-      <p class="error">{error}</p>
-    {/if}
+      {#if form?.error}
+        <p class="error">{form.error}</p>
+      {/if}
 
-    {#if success}
-      <p>Thank you for signing up!</p>
-      <p><a href="/auth/login">You can log in.</a></p>
-    {/if}
+      {#if form?.success}
+        <p>Thank you for signing up!</p>
+      {/if}
 
-    <button type="submit">Sign Up</button>
-  </form>
+      <button class="button">Register</button>
+    </form>
+  </div>
 </section>
 
 <style>
+  img {
+    height: 50px;
+    margin-bottom: 30px;
+  }
   .error {
     color: tomato;
+  }
+  .form {
+    height: 100vh;
+  }
+  button {
+    margin-top: 30px;
   }
 </style>

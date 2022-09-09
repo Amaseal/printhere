@@ -1,38 +1,12 @@
 <script>
-  import { send } from "$lib/scripts/api";
+  import { enhance } from "$app/forms";
 
-  // these props are passed from the page endpoint
-  // so the user can get feedback if JavaScript doesn't work
-  export let error;
-  export let success;
-
-  // this runs on the client when JavaScript is available
-  // so we can just reuse the existing `error` and `success` props
-  async function login(event) {
-    error = "";
-
-    const formEl = event.target;
-    const response = await send(formEl);
-
-    if (response.error) {
-      error = response.error;
-    }
-
-    if (response.success) {
-      success = response.success;
-    }
-
-    formEl.reset(); // using the web platform 💪
-  }
+  export let form;
 </script>
 
 <section class="form">
   <div class="container flex collumn align justify">
-    <form
-      class="loginform flex collumn stretch"
-      on:submit|preventDefault={login}
-      method="post"
-    >
+    <form class="loginform flex collumn stretch" method="post" use:enhance>
       <img src="../logo.svg" alt="" />
       <div class="flex collumn ">
         <label for="username">Username</label>
@@ -43,14 +17,11 @@
         <label for="password">Password</label>
         <input id="password" name="password" type="password" required />
       </div>
-
-      {#if error}
-        <p class="error">{error}</p>
+      {#if form?.success}
+        <p>success</p>
       {/if}
-
-      {#if success}
-        <p>Thank you for signing up!</p>
-        <p><a href="/auth/login">You can log in.</a></p>
+      {#if form?.error}
+        <p>{form.error}</p>
       {/if}
 
       <button class="button" type="submit">Login</button>
