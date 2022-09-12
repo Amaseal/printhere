@@ -21,7 +21,7 @@
         <p>success</p>
       {/if}
       {#if form?.error}
-        <p>{form.error}</p>
+        <p class="error">{form.error}</p>
       {/if}
 
       <button class="button" type="submit">Login</button>
