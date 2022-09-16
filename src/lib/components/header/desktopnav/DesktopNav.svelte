@@ -1,3 +1,6 @@
+<script>
+</script>
+
 <nav class="flex align">
   <a href="/products">Products</a>
   <a href="/about">About</a>
