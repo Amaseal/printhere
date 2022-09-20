@@ -1,1 +1,6 @@
-<p>you are loged in</p>
+<script>
+  export let data;
+  console.log(data);
+</script>
+
+<p>{data.data.username}</p>

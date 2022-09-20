@@ -1,15 +1,25 @@
 <script>
   import FormatListBulleted from "svelte-material-icons/FormatListBulleted.svelte";
   import MessageReplyTextOutline from "svelte-material-icons/MessageReplyTextOutline.svelte";
+
+  const logout = async () => {
+    const res = fetch("/admin/logout");
+    const data = res.json();
+
+    return data;
+  };
 </script>
 
 <div class="nav">
-  <img src="./logo.svg" alt="" />
+  <a href="/admin"> <img src="../logo.svg" alt="" /></a>
+
   <nav>
-    <a href="/orders"><FormatListBulleted /><span>Orders</span> </a>
-    <a href="/orders"><MessageReplyTextOutline /><span>Products</span> </a>
+    <a href="/admin/orders"><FormatListBulleted /><span>Orders</span> </a>
+    <a href="/admin/products"
+      ><MessageReplyTextOutline /><span>Products</span>
+    </a>
   </nav>
-  <button class="button">logout</button>
+  <button on:click={() => logout()} class="button">logout</button>
 </div>
 
 <style>

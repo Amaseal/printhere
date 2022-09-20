@@ -5,7 +5,7 @@ import * as cookie from "cookie";
 import { db } from "$lib/scripts/database";
 
 export const actions = {
-  default: async ({ cookies, request, setHeaders }) => {
+  default: async ({ cookies, request }) => {
     const form = await request.formData();
     const username = form.get("username");
     const password = form.get("password");
@@ -34,9 +34,9 @@ export const actions = {
         return invalid(403, { error: " wrong credendtials" });
       }
 
-      cookies.set(" sesion", user.userAuthToken, {
+      cookies.set("session", user.userAuthToken, {
         path: "/admin",
-        expires: new Date(0),
+        maxAge: 60 * 60 * 24 * 30,
       });
 
       return { success: "Success" };
