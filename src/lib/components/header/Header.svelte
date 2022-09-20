@@ -32,6 +32,7 @@
     position: fixed;
     top: 0;
     width: 100%;
+    background-color: var(--background);
   }
   img {
     width: 180px;

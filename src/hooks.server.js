@@ -1,7 +1,7 @@
 import { db } from "$lib/scripts/database";
 
 export async function handle({ event, resolve }) {
-  const cookies = event.cookies.get("session");
+  const cookies = event.cookies.get("session") ?? "";
 
   const session = await db.user.findUnique({
     where: { userAuthToken: cookies },

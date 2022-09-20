@@ -17,6 +17,7 @@ model Product {
   image String
   sizes Size[]
   materials Material[]
+  fileUrl String
 
 }
 
@@ -38,4 +39,10 @@ model User {
   username     String   @unique
   passwordHash String
   userAuthToken String   @unique @default(cuid())
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  customerEmail String
+  customerName String
 }
