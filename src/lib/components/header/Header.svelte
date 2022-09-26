@@ -32,6 +32,7 @@
     position: fixed;
     top: 0;
     width: 100%;
+    z-index: 999999;
     background-color: var(--background);
   }
   img {

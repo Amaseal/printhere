@@ -31,6 +31,9 @@
     height: 80vh;
     object-fit: contain;
   }
+  .img {
+    height: 100%;
+  }
   .text {
     padding-right: 50px;
   }

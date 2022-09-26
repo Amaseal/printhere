@@ -99,3 +99,7 @@ textarea {
   background-color: white;
   border-radius: 20px;
 }
+
+section {
+  padding: 100px 0;
+}

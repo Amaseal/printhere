@@ -30,7 +30,6 @@
   section {
     position: relative;
     background-color: var(--secondary-color);
-    padding: 100px 0;
     overflow: hidden;
   }
   ol {
