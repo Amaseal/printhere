@@ -103,3 +103,7 @@ textarea {
 section {
   padding: 100px 0;
 }
+
+.dark {
+  background-color: var(--secondary-color);
+}

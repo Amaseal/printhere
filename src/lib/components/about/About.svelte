@@ -2,7 +2,7 @@
   let options = ["Choose a product", "Upload your artwork", "Order"];
 </script>
 
-<section>
+<section class="dark">
   <div class="container">
     <div class="flex space">
       <div class="steps">
@@ -29,7 +29,6 @@
 <style>
   section {
     position: relative;
-    background-color: var(--secondary-color);
     overflow: hidden;
   }
   ol {
