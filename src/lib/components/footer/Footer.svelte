@@ -4,7 +4,7 @@
 
 <section class="dark ">
   <div class="container flex">
-    <img src="./logo.svg" alt="" />
+    <img src="../logo.svg" alt="" />
     <Form />
   </div>
 </section>
