@@ -11,6 +11,10 @@
   // });
 </script>
 
+<svelte:head>
+  <title>PrintHere - online printing service</title>
+</svelte:head>
+
 <Hero />
 <About />
 <Categories categories={data.categories} />

@@ -81,6 +81,13 @@ a.active {
 .collumn {
   flex-direction: column;
 }
+
+.grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
 .form {
   height: 100vh;
 }

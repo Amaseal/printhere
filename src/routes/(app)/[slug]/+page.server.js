@@ -1,4 +1,5 @@
 import { db } from "$lib/scripts/database";
+import { error } from "@sveltejs/kit";
 
 export async function load({ params }) {
   // do some compute on the server

@@ -1,17 +1,14 @@
 <script>
-  export let data;
-  console.log(data);
-
-  import { page } from "$app/stores";
-  console.log($page);
+  export let category;
+  console.log(category);
 </script>
 
 <div class="card">
-  <a class="flex collumn" href="{$page.params.slug ?? ''}/{data.slug}">
+  <a class="flex collumn" href={category.slug}>
     <div class="image">
-      <img src={data.imgUrl} alt="" />
+      <img src={category.imgUrl} alt="" />
     </div>
-    <h3>{data.title}</h3>
+    <h3>{category.title}</h3>
   </a>
 </div>
 

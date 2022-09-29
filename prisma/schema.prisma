@@ -20,7 +20,7 @@ model Product {
   title       String
   slug        String     @unique
   description String
-  imageUrl    String
+  imgUrl    String
   sizes       Size[]
   quantities  Quantity[]
   category    Category   @relation(fields: [categoryId], references: [id])
