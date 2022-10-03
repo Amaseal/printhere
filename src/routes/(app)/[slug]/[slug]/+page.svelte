@@ -1,27 +1,42 @@
 <script>
   import CartOutline from "svelte-material-icons/CartOutline.svelte";
+  import { cart } from "$lib/scripts/cart";
   export let data;
 
-  let files;
-  let fileinput;
-  let fileImage;
-  const fileSelected = (e) => {
-    let image = e.target.files[0];
+  $: console.log($cart);
 
-    if (image) {
+  let files;
+  let alert;
+  let width;
+  let height;
+  let file;
+
+  let fileImage;
+
+  const fileSelected = (e) => {
+    if (e.target.files[0]) {
+      file = e.target.files[0];
       let reader = new FileReader();
-      reader.readAsDataURL(image);
+      reader.readAsDataURL(file);
+
       reader.onload = (e) => {
+        let img = new Image();
+        img.src = e.target.result;
         fileImage = e.target.result;
+        img.onload = function () {
+          width = this.width;
+          height = this.height;
+          if (width < 500 || height < 500) {
+            alert = "File too small";
+          }
+        };
       };
     } else {
-      fileImage;
+      files = [];
     }
   };
 
-  $: console.log(files, fileImage);
-
-  $: total = selectedPrice.price * quantities;
+  $: total = (selectedPrice.price * quantities).toFixed(2);
 
   let sizes = data.product.sizes[0].size;
   let quantities = data.product.quantities[0].quantity;
@@ -29,6 +44,19 @@
   $: selectedPrice = data.product.sizes.find(
     (selected) => selected.size === sizes
   );
+
+  const addToCart = () => {
+    let orderItem = {
+      name: data.product.title,
+      size: sizes,
+      quantity: quantities,
+      price: total,
+      image: fileImage,
+    };
+    $cart.items = [orderItem];
+  };
+
+  console.log($cart);
 </script>
 
 <section>
@@ -39,74 +67,86 @@
     <div class="info">
       <h1>{data.product.title}</h1>
       <p>{data.product.description}</p>
-      <form action="">
-        <h3>Sizes:</h3>
-        <div class="sizes flex">
-          {#each data.product.sizes as size}
-            <div class="radio">
-              <label for="size">{size.size}</label>
-              <input
-                bind:group={sizes}
-                type="radio"
-                name="size"
-                id="size"
-                value={size.size}
-              />
-            </div>
-          {/each}
-        </div>
 
-        <h3>Quantity:</h3>
-        <div class="quantities flex">
-          {#each data.product.quantities as quantity}
-            <div class="radio">
-              <label for="quantity">{quantity.quantity}</label>
-              <input
-                bind:group={quantities}
-                type="radio"
-                name="quantity"
-                id="quantity"
-                value={quantity.quantity}
-              />
-            </div>
-          {/each}
-        </div>
+      <h3>Sizes:</h3>
+      <div class="sizes flex">
+        {#each data.product.sizes as size}
+          <div class="radio">
+            <label for="size">{size.size}</label>
+            <input
+              bind:group={sizes}
+              type="radio"
+              name="size"
+              id="size"
+              value={size.size}
+            />
+          </div>
+        {/each}
+      </div>
 
-        <h3>File:</h3>
+      <h3>Quantity:</h3>
+      <div class="quantities flex">
+        {#each data.product.quantities as quantity}
+          <div class="radio">
+            <label for="quantity">{quantity.quantity}</label>
+            <input
+              bind:group={quantities}
+              type="radio"
+              name="quantity"
+              id="quantity"
+              value={quantity.quantity}
+            />
+          </div>
+        {/each}
+      </div>
 
-        <label class="file" for="file">
-          <input
-            type="file"
-            name="file"
-            id="file"
-            bind:files
-            accept="image/png, image/jpeg"
-            on:change={(e) => fileSelected(e)}
-            bind:this={fileinput}
-          />
+      <h3>File:</h3>
 
-          {#if fileImage}
-            <div class="flex align">
-              <img src={fileImage} alt="" />
-              <p>{files[0].name}</p>
-            </div>
-          {:else}
-            Select to add a file
+      <label class="file" for="file">
+        <input
+          type="file"
+          name="file"
+          id="file"
+          bind:files
+          accept="image/png, image/jpeg"
+          on:change={(e) => fileSelected(e)}
+        />
+
+        {#if file}
+          <div class="flex align">
+            <img src={fileImage} alt="" />
+            <p>{file.name}</p>
+          </div>
+          {#if alert}
+            <p class="alert">{alert}</p>
           {/if}
-        </label>
+        {:else}
+          Select to add a file
+        {/if}
+      </label>
 
-        <div class="total flex align">
-          <h2>Total: {total} Eur</h2>
-          <button class="button flex align"
-            >Add to cart <CartOutline size="1.5rem" /></button
-          >
-        </div>
-      </form>
+      <div class="total flex align">
+        <h2>Total: {total} Eur</h2>
+        <button
+          class:disabled={alert || !fileImage}
+          on:click={() => addToCart()}
+          disabled={alert || !fileImage}
+          class="button flex align"
+          >Add to cart <CartOutline size="1.5rem" /></button
+        >
+      </div>
     </div>
   </div>
 </section>
 
 <style>
+  .alert {
+    color: red;
+  }
+  .disabled {
+    background-color: var(--secondary-color);
+    border: 2px solid var(--secondary-color);
+  }
   .button {
     gap: 10px;
   }
@@ -174,7 +214,7 @@
   .file {
     background-color: var(--secondary-color);
     padding: 20px;
-    width: 300px;
+    width: 60%;
     display: block;
     border-radius: 20px;
   }
