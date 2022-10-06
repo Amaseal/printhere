@@ -2,6 +2,8 @@
   import DesktopNav from "$lib/components/header/desktopnav/DesktopNav.svelte";
   import MobileNav from "$lib/components/header/mobilenav/MobileNav.svelte";
   import CartOutline from "svelte-material-icons/CartOutline.svelte";
+  import Cart from "$lib/components/cart/Cart.svelte";
+  import { globals } from "$lib/scripts/globals";
 
   let width;
   let size = "1.5em";
@@ -20,10 +22,13 @@
     {:else}
       <MobileNav />
     {/if}
-    <button class="cart">
+    <button class="cart" on:click={() => ($globals.cart = !$globals.cart)}>
       <span>0</span>
       <CartOutline {size} />
     </button>
+    {#if $globals.cart}
+      <Cart />
+    {/if}
   </div>
 </header>
 

@@ -9,31 +9,48 @@
   let alert;
   let width;
   let height;
-  let file;
 
-  let fileImage;
+  let image = {
+    name: "",
+    large: "",
+    small: "",
+  };
 
   const fileSelected = (e) => {
-    if (e.target.files[0]) {
-      file = e.target.files[0];
-      let reader = new FileReader();
-      reader.readAsDataURL(file);
+    const file = e.target.files[0];
 
-      reader.onload = (e) => {
-        let img = new Image();
-        img.src = e.target.result;
-        fileImage = e.target.result;
-        img.onload = function () {
-          width = this.width;
-          height = this.height;
-          if (width < 500 || height < 500) {
-            alert = "File too small";
-          }
-        };
+    if (!file) return;
+
+    image.name = file.name;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      image.large = img.src;
+
+      img.onload = function (e) {
+        const canvas = document.createElement("canvas");
+
+        let smallWidth = 300;
+        const scaleSize = smallWidth / e.target.width;
+
+        canvas.width = smallWidth;
+        canvas.height = e.target.height * scaleSize;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(e.target, 0, 0, canvas.width, canvas.height);
+        image.small = ctx.canvas.toDataURL(e.target, "image/png");
+
+        width = this.width;
+        height = this.height;
+        if (width < 500 || height < 500) {
+          alert = "File too small";
+        }
       };
-    } else {
-      files = [];
-    }
+    };
   };
 
   $: total = (selectedPrice.price * quantities).toFixed(2);
@@ -47,13 +64,14 @@
 
   const addToCart = () => {
     let orderItem = {
-      name: data.product.title,
+      title: data.product.title,
       size: sizes,
       quantity: quantities,
       price: total,
-      image: fileImage,
+      image: image,
+      amount: 1,
     };
-    $cart.items = [orderItem];
+    $cart.items = [...$cart.items, orderItem];
   };
 
   console.log($cart);
@@ -112,10 +130,10 @@
           on:change={(e) => fileSelected(e)}
         />
 
-        {#if file}
+        {#if image.small}
           <div class="flex align">
-            <img src={fileImage} alt="" />
-            <p>{file.name}</p>
+            <img src={image.small} alt="" />
+            <p>{image.name.slice(0, 15)}...</p>
           </div>
           {#if alert}
             <p class="alert">{alert}</p>
@@ -128,9 +146,9 @@
       <div class="total flex align">
         <h2>Total: {total} Eur</h2>
         <button
-          class:disabled={alert || !fileImage}
+          class:disabled={alert || !image.small}
           on:click={() => addToCart()}
-          disabled={alert || !fileImage}
+          disabled={alert || !image.small}
           class="button flex align"
           >Add to cart <CartOutline size="1.5rem" /></button
         >
