@@ -48,10 +48,14 @@
         height = this.height;
         if (width < 500 || height < 500) {
           alert = "File too small";
+        } else {
+          alert = "";
         }
       };
     };
   };
+
+  $: console.log(image);
 
   $: total = (selectedPrice.price * quantities).toFixed(2);
 
@@ -68,7 +72,7 @@
       size: sizes,
       quantity: quantities,
       price: total,
-      image: image,
+      image: { ...image },
       amount: 1,
     };
     $cart.items = [...$cart.items, orderItem];

@@ -9,15 +9,17 @@
 <div class="wrapper" transition:fade>
   <div transition:fly={{ x: 300, duration: 200 }} class="cart">
     <h2>Your cart</h2>
-    {#each $cart.items as product}
-      <CartItem {product} />
+    {#each $cart.items as product, index}
+      <CartItem {product} {index} />
     {/each}
   </div>
   <button
+    class="close"
     transition:fly={{ x: 300, duration: 200 }}
     on:click={() => ($globals.cart = !$globals.cart)}
     ><Close size="1.5em" /></button
   >
+  <a href="/checkout" class="button">checkout</a>
 </div>
 
 <style>
@@ -40,7 +42,7 @@
     background-color: white;
     padding: 30px;
   }
-  button {
+  .close {
     background-color: white;
     border: none;
     border-radius: 50%;
@@ -52,7 +54,7 @@
     cursor: pointer;
   }
 
-  button:hover {
+  .close:hover {
     background-color: var(--secondary-color);
   }
 </style>
