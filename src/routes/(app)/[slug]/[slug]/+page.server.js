@@ -9,8 +9,11 @@ export async function load({ params }) {
       slug: params.slug,
     },
     include: {
-      sizes: true,
-      quantities: true,
+      sizes: {
+        include: {
+          quantities: true,
+        },
+      },
     },
   });
 

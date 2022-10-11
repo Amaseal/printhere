@@ -3,8 +3,6 @@
   import { cart } from "$lib/scripts/cart";
   export let data;
 
-  $: console.log($cart);
-
   let files;
   let alert;
   let width;
@@ -55,23 +53,29 @@
     };
   };
 
-  $: console.log(image);
-
-  $: total = (selectedPrice.price * quantities).toFixed(2);
+  // $: total = (selectedPrice.price * quantities).toFixed(2);
 
   let sizes = data.product.sizes[0].size;
-  let quantities = data.product.quantities[0].quantity;
 
-  $: selectedPrice = data.product.sizes.find(
-    (selected) => selected.size === sizes
-  );
+  let quantities = data.product.sizes.find((x) => x.size === `${sizes}`)
+    .quantities[0].quantity;
+
+  $: price = data.product.sizes
+    .find((x) => x.size === `${sizes}`)
+    .quantities.find((x) => x.quantity === `${quantities}`).price;
+
+  $: console.log(price);
+
+  // $: selectedPrice = data.product.sizes.find(
+  //   (selected) => selected.size === sizes
+  // );
 
   const addToCart = () => {
     let orderItem = {
       title: data.product.title,
       size: sizes,
       quantity: quantities,
-      price: total,
+      price: price,
       image: { ...image },
       amount: 1,
     };
@@ -108,7 +112,7 @@
 
       <h3>Quantity:</h3>
       <div class="quantities flex">
-        {#each data.product.quantities as quantity}
+        {#each data.product.sizes.find((x) => x.size === `${sizes}`).quantities as quantity}
           <div class="radio">
             <label for="quantity">{quantity.quantity}</label>
             <input
@@ -148,7 +152,7 @@
       </label>
 
       <div class="total flex align">
-        <h2>Total: {total} Eur</h2>
+        <h2>Total: {price.toFixed(2)} Eur</h2>
         <button
           class:disabled={alert || !image.small}
           on:click={() => addToCart()}
@@ -181,6 +185,7 @@
 
   h3 {
     margin-top: 30px;
+    margin-bottom: 20px;
   }
   .image {
     background: var(--primary-color);
@@ -195,10 +200,13 @@
   }
   .info {
     margin-left: 60px;
+    max-width: 30%;
   }
   .radio {
     display: flex;
-    padding: 20px;
+    width: 120px;
+    justify-content: center;
+    padding: 20px 25px;
     background: var(--secondary-color);
     border-radius: 20px;
     border: 2px solid var(--secondary-color);
@@ -221,6 +229,7 @@
   .sizes,
   .quantities {
     gap: 20px;
+    flex-wrap: wrap;
   }
   .radio:has(input:checked) {
     border: 2px solid var(--primary-color);
@@ -236,7 +245,7 @@
   .file {
     background-color: var(--secondary-color);
     padding: 20px;
-    width: 60%;
+    width: 400px;
     display: block;
     border-radius: 20px;
   }

@@ -54,6 +54,7 @@ a.active {
   transition: background 0.2s ease;
 }
 .button:hover {
+  color: black;
   border: 2px solid var(--primary-color);
   background: transparent;
 }

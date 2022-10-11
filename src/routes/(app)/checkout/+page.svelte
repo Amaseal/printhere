@@ -10,23 +10,44 @@
   }, 0);
 </script>
 
-<div class="wrapper" transition:fade>
-  <div transition:fly={{ x: 300, duration: 200 }} class="cart flex collumn">
-    <h2>Your cart</h2>
-    {#if $cart.items}
-      {#each $cart.items as product, index}
-        <CartItem {product} {index} />
-      {/each}
-    {:else}
-      <h3>Cart is empty</h3>
-    {/if}
-    <hr />
-    <div class="checkout flex align">
-      <h3>Total: {total.toFixed(2)} Eur</h3>
-      <a href="/checkout" class="button">Checkout</a>
+<section>
+  <div class="container flex">
+    <div class="info">
+      <form action="">
+        <div class="input">
+          <label for="name">Name</label>
+          <input type="text" />
+        </div>
+        <div class="input">
+          <label for="name">Surname</label>
+          <input type="text" />
+        </div>
+        <div class="input">
+          <label for="name">Email</label>
+          <input type="text" />
+        </div>
+        <div class="input">
+          <label for="name">Phone:</label>
+          <input type="text" />
+        </div>
+      </form>
+    </div>
+    <div transition:fly={{ x: 300, duration: 200 }} class="cart flex collumn">
+      <h2>Your cart</h2>
+      {#if $cart.items}
+        {#each $cart.items as product, index}
+          <CartItem {product} {index} />
+        {/each}
+      {:else}
+        <h3>Cart is empty</h3>
+      {/if}
+      <hr />
+      <div class="checkout flex align">
+        <h3>Total: {total.toFixed(2)} Eur</h3>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
 <button
   class="close"
@@ -39,15 +60,7 @@
   h2 {
     margin-bottom: 30px;
   }
-  .wrapper {
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 300;
-  }
+
   .cart {
     height: 100%;
     margin-left: auto;

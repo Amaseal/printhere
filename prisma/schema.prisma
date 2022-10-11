@@ -22,7 +22,6 @@ model Product {
   description String
   imgUrl    String
   sizes       Size[]
-  quantities  Quantity[]
   category    Category   @relation(fields: [categoryId], references: [id])
   categoryId  Int
 }
@@ -30,8 +29,9 @@ model Product {
 model Quantity {
   id        Int     @id @default(autoincrement())
   quantity  String
-  product   Product @relation(fields: [productId], references: [id])
-  productId Int
+  size   Size @relation(fields: [quantityId], references: [id])
+  quantityId Int
+  price Float 
 }
 
 model Size {
@@ -39,7 +39,9 @@ model Size {
   size      String
   product   Product @relation(fields: [productId], references: [id])
   productId Int
-  price     Float
+  quantities  Quantity[]
+
+
 }
 
 model User {

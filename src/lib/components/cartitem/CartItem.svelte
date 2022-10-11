@@ -22,7 +22,7 @@
       <p>{product.quantity} pcs.</p>
     </div>
   </div>
-  <h4>{product.price} Eur</h4>
+  <h4>{product.price.toFixed(2)} Eur</h4>
 </div>
 
 <style>
@@ -48,6 +48,7 @@
   }
 
   p {
+    font-size: 14px;
     padding: 5px 10px;
     border-radius: 5px;
     background-color: var(--secondary-color);
