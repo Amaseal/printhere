@@ -95,10 +95,15 @@ a.active {
 
 input,
 textarea {
+  font-size: 14px;
   padding: 10px 15px;
   border-radius: 5px;
   border: 1px solid var(--primary-color);
   width: 100%;
+}
+label {
+  font-size: 14px;
+  display: block;
 }
 
 .loginform {
@@ -114,4 +119,8 @@ section {
 
 .dark {
   background-color: var(--secondary-color);
+}
+
+.selection {
+  font-size: 14px;
 }

@@ -3,6 +3,10 @@
   import { cart } from "$lib/scripts/cart";
   export let data;
 
+  import { Shadow } from "svelte-loading-spinners";
+
+  let loading = false;
+
   let files;
   let alert;
   let width;
@@ -16,6 +20,7 @@
 
   const fileSelected = (e) => {
     const file = e.target.files[0];
+    loading = true;
 
     if (!file) return;
 
@@ -44,6 +49,7 @@
 
         width = this.width;
         height = this.height;
+        loading = false;
         if (width < 500 || height < 500) {
           alert = "File too small";
         } else {
@@ -54,30 +60,25 @@
   };
 
   // $: total = (selectedPrice.price * quantities).toFixed(2);
+  let sizeGroup;
+  $: selectedSize =
+    data.product.sizes.find((x) => x.id === sizeGroup) || data.product.sizes[0];
 
-  let sizes = data.product.sizes[0].size;
+  let quantityGroup;
 
-  let quantities = data.product.sizes.find((x) => x.size === `${sizes}`)
-    .quantities[0].quantity;
+  $: selectedQuantity =
+    selectedSize.quantities.find((x) => x.id === quantityGroup) ||
+    selectedSize.quantities[0];
 
-  $: price = data.product.sizes
-    .find((x) => x.size === `${sizes}`)
-    .quantities.find((x) => x.quantity === `${quantities}`).price;
-
-  $: console.log(price);
-
-  // $: selectedPrice = data.product.sizes.find(
-  //   (selected) => selected.size === sizes
-  // );
+  $: price = selectedQuantity.price;
 
   const addToCart = () => {
     let orderItem = {
       title: data.product.title,
-      size: sizes,
-      quantity: quantities,
+      size: selectedSize,
+      quantity: selectedQuantity,
       price: price,
       image: { ...image },
-      amount: 1,
     };
     $cart.items = [...$cart.items, orderItem];
   };
@@ -100,31 +101,33 @@
           <div class="radio">
             <label for="size">{size.size}</label>
             <input
-              bind:group={sizes}
+              bind:group={sizeGroup}
               type="radio"
               name="size"
               id="size"
-              value={size.size}
+              value={size.id}
             />
           </div>
         {/each}
       </div>
 
-      <h3>Quantity:</h3>
-      <div class="quantities flex">
-        {#each data.product.sizes.find((x) => x.size === `${sizes}`).quantities as quantity}
-          <div class="radio">
-            <label for="quantity">{quantity.quantity}</label>
-            <input
-              bind:group={quantities}
-              type="radio"
-              name="quantity"
-              id="quantity"
-              value={quantity.quantity}
-            />
-          </div>
-        {/each}
-      </div>
+      {#key sizeGroup}
+        <h3>Quantity:</h3>
+        <div class="quantities flex">
+          {#each selectedSize.quantities as quantity}
+            <div class="radio">
+              <label for="quantity">{quantity.quantity}</label>
+              <input
+                bind:group={quantityGroup}
+                type="radio"
+                name="quantity"
+                id="quantity"
+                value={quantity.id}
+              />
+            </div>
+          {/each}
+        </div>
+      {/key}
 
       <h3>File:</h3>
 
@@ -138,7 +141,11 @@
           on:change={(e) => fileSelected(e)}
         />
 
-        {#if image.small}
+        {#if loading}
+          <div class="loader">
+            <Shadow size="60" color="#00e269" unit="px" duration="1s" />
+          </div>
+        {:else if image.small}
           <div class="flex align">
             <img src={image.small} alt="" />
             <p>{image.name.slice(0, 15)}...</p>
@@ -259,5 +266,11 @@
 
   .file > .flex > p {
     margin-left: 20px;
+  }
+  .loader {
+    height: 100px;
+    width: 100px;
+    display: grid;
+    place-items: center;
   }
 </style>

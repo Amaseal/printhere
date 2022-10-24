@@ -23,7 +23,11 @@
     <hr />
     <div class="checkout flex align">
       <h3>Total: {total.toFixed(2)} Eur</h3>
-      <a href="/checkout" class="button">Checkout</a>
+      <a
+        on:click={() => ($globals.cart = !$globals.cart)}
+        href="/checkout"
+        class="button">Checkout</a
+      >
     </div>
   </div>
 </div>

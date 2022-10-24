@@ -12,14 +12,23 @@
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"@zerodevx/svelte-img": "^1.2.1",
+		"stripe": "^10.13.0",
 		"svelte": "^3.44.0",
+		"svelte-loading-spinners": "^0.3.4",
+		"svelte-stripe": "^0.0.19",
 		"vite": "^3.1.0"
 	},
 	"type": "module",
 	"dependencies": {
+		"@beyonk/async-script-loader": "^2.2.2",
+		"@beyonk/svelte-googlemaps": "^3.2.0",
 		"@prisma/client": "^4.3.1",
+		"@silintl/svelte-google-places-autocomplete": "^1.1.6",
+		"@stripe/stripe-js": "^1.39.0",
 		"bcrypt": "^5.0.1",
 		"cookie": "^0.5.0",
-		"svelte-material-icons": "^2.0.4"
+		"svelecte": "^3.10.2",
+		"svelte-material-icons": "^2.0.4",
+		"svelte-select": "^4.4.7"
 	}
 }

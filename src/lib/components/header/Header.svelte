@@ -5,6 +5,10 @@
   import Cart from "$lib/components/cart/Cart.svelte";
   import { globals } from "$lib/scripts/globals";
 
+  import { cart } from "$lib/scripts/cart";
+
+  $: amount = $cart.items.length;
+
   let width;
   let size = "1.5em";
 </script>
@@ -23,7 +27,7 @@
       <MobileNav />
     {/if}
     <button class="cart" on:click={() => ($globals.cart = !$globals.cart)}>
-      <span>0</span>
+      <span>{amount}</span>
       <CartOutline {size} />
     </button>
     {#if $globals.cart}

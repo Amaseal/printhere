@@ -18,8 +18,8 @@
   <div class="info">
     <h3>{product.title}</h3>
     <div class="tokens flex">
-      <p>{product.size} cm</p>
-      <p>{product.quantity} pcs.</p>
+      <p>{product.size.size} cm</p>
+      <p>{product.quantity.quantity} pcs.</p>
     </div>
   </div>
   <h4>{product.price.toFixed(2)} Eur</h4>

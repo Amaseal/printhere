@@ -14,7 +14,7 @@
       </p>
     </div>
     <div class="img">
-      <img src="./hero_image.png" alt="hero_image" />
+      <img src="../hero_image.png" alt="hero" />
     </div>
   </div>
 </section>
