@@ -5,6 +5,7 @@
   import { cart } from "$lib/scripts/cart";
   import CartItem from "$lib/components/cartitem/CartItem.svelte";
   import Select from "svelte-select";
+  import { goto } from "$app/navigation";
 
   import { PUBLIC_STRIPE_KEY } from "$env/static/public";
   import { PUBLIC_MAPS_KEY } from "$env/static/public";
@@ -23,56 +24,83 @@
       value: val.NAME,
     };
   });
-
+  let error;
   let data;
 
   let stripe = null;
   let elements;
-  let shippingOption;
-  $: shipping = shippingOption === "omniva" ? 10 : 20;
+  let shippingOption = 0;
+  let processing = false;
+
+  $: total = $cart.items.reduce((prev, cur) => {
+    return prev + cur.price;
+  }, 0);
+
+  $: console.log(JSON.stringify(shippingOption));
 
   const getClientSecret = async () => {
-    if (!data) {
-      const res = await fetch("./stripe", {
-        method: "post",
-        headers: {
-          "content-type": "aplication/json",
-        },
-        body: JSON.stringify($cart),
-      });
-
-      data = await res.json();
-      console.log(data);
-    } else {
-      const res = await fetch("./stripe", {
-        method: "update",
-        headers: {
-          "content-type": "aplication/json",
-        },
-        body: JSON.stringify(shipping),
-      });
-    }
+    const res = await fetch("./stripe", {
+      method: "post",
+      headers: {
+        "content-type": "aplication/json",
+      },
+      body: JSON.stringify({ $cart, shippingOption, paymentIntent: data }),
+    });
+    data = await res.json();
+    console.log(data);
   };
+
+  async function submit() {
+    if (processing) return;
+    processing = true;
+
+    const result = await stripe.confirmPayment({
+      elements,
+      redirect: "if_required",
+    });
+
+    console.log({ result });
+
+    if (result.error) {
+      error = result.error;
+      processing = false;
+    } else {
+      $cart = {
+        items: [],
+      };
+      goto("/thank-you");
+    }
+  }
 
   onMount(async () => {
     stripe = await loadStripe(PUBLIC_STRIPE_KEY);
+    if ($cart.items.length > 0) {
+      getClientSecret();
+    }
   });
+
+  const checkPromo = async () => {
+    const res = await fetch("./stripe", {
+      method: "post",
+      headers: {
+        "content-type": "aplication/json",
+      },
+      body: JSON.stringify({ $cart, shippingOption, paymentIntent: data }),
+    });
+    data = await res.json();
+    console.log(data);
+  };
 
   const autocomplete = (ev) => {
     console.log(ev);
   };
-
-  $: total =
-    $cart.items.reduce((prev, cur) => {
-      return prev + cur.price;
-    }, 0) + shipping;
 </script>
 
 <section>
   <div class="container flex">
     <div class="info">
       {#if $cart.items.length > 0}
-        <form action="">
+        <form on:submit|preventDefault={submit}>
           <div class="row flex">
             <div class="input">
               <label for="name">Name</label>
@@ -100,28 +128,27 @@
               <input
                 type="radio"
                 bind:group={shippingOption}
-                value="omniva"
+                value={10}
                 name="shippingOption"
-                checked
+                on:change={() => getClientSecret()}
               />
             </div>
             <div class="input shipping flex">
               <label for="shippingOption">Standart shipping</label>
               <input
-                on:change={() => getClientSecret()}
                 type="radio"
                 bind:group={shippingOption}
-                value="Standart shipping"
-                id="Standart shipping"
+                value={20}
                 name="shippingOption"
+                on:change={() => getClientSecret()}
               />
             </div>
           </div>
 
-          {#if shippingOption === "omniva"}
+          {#if shippingOption === 10}
             <div class="row">
               <div class="themed">
-                <label>Please select parcel machine</label>
+                <label for="select">Please select parcel machine</label>
                 <Select {items} inputStyles="font-size: 14px" />
               </div>
             </div>
@@ -146,11 +173,13 @@
             </Elements>
           {/if}
           <div class="flex row align payment">
-            <div class="flex align">
-              <label for="promo">Promocode</label>
-              <input type="text" />
-            </div>
-            <button class="button" type="submit">Pay</button>
+            <button disabled={processing} class="button" type="submit"
+              >{#if processing}
+                processing...
+              {:else}
+                Pay
+              {/if}</button
+            >
           </div>
         </form>
       {:else}
@@ -166,16 +195,17 @@
         <hr />
         <div class="total">
           <h4>Subtotal: {total.toFixed(2)} Eur</h4>
-          <h4>Shipping: {shipping.toFixed(2)} Eur</h4>
+          <h4>Shipping: {shippingOption.toFixed(2)} Eur</h4>
         </div>
       {:else}
         <h3>Cart is empty</h3>
       {/if}
       <hr />
       <div class="checkout flex align">
-        <h3>Total: {(total + shipping).toFixed(2)} Eur</h3>
+        <h3>Total: {(total + shippingOption).toFixed(2)} Eur</h3>
       </div>
     </div>
+    <p>{error}</p>
   </div>
 </section>
 
@@ -265,9 +295,6 @@
   .payment {
     margin-top: 30px;
     justify-content: flex-end;
-  }
-  .payment > div {
-    gap: 20px;
   }
   .themed {
     --border: 1px solid var(--primary-color);

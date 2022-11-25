@@ -1,31 +1,55 @@
 import Stripe from "stripe";
-
 import { db } from "$lib/scripts/database";
 
-// initialize Stripe
 const stripe = new Stripe(process.env["STRIPE_SECRET_KEY"]);
 
 export async function POST({ request }) {
   const data = await request.json();
 
-  let total = data.items.reduce((prev, cur) => {
-    return prev + cur.price;
-  }, 0);
+  console.log(data);
+  let search = [];
 
-  console.log(data.items.quantity);
+  data.$cart.items.map((item) => {
+    search.push(item.quantity.id);
+  });
 
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: total * 1000,
-    // note, for some EU-only payment methods it must be EUR
-    currency: "eur",
-    // specify what payment methods are allowed
-    // can be card, sepa_debit, ideal, etc...
-    automatic_payment_methods: {
-      enabled: true,
+  const quantities = await db.quantity.findMany({
+    where: {
+      id: { in: search },
     },
   });
 
-  if (paymentIntent) {
+  let paymentIntent = null;
+
+  if (!data.paymentIntent) {
+    let total =
+      quantities.reduce((prev, cur) => {
+        return prev + cur.price;
+      }, 0) + data.shippingOption;
+
+    paymentIntent = await stripe.paymentIntents.create({
+      amount: total * 100,
+      currency: "eur",
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+
+    console.log(paymentIntent);
+
+    return new Response(JSON.stringify(paymentIntent));
+  } else {
+    let total =
+      quantities.reduce((prev, cur) => {
+        return prev + cur.price;
+      }, 0) + data.shippingOption;
+
+    paymentIntent = await stripe.paymentIntents.update(data.paymentIntent.id, {
+      amount: total * 100,
+    });
+
+    console.log(paymentIntent);
+
     return new Response(JSON.stringify(paymentIntent));
   }
 

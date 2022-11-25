@@ -41,7 +41,43 @@
     margin-top: 90px;
   }
   .subtext {
-    font-size: 32px;
+    /* font-size: 32px; */
+    font-size: clamp(16px, 2vw + 8px, 32x);
     margin-top: 90px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    div > div {
+      width: 100%;
+    }
+    .text {
+      order: 2;
+    }
+    img,
+    .img {
+      height: 45vh;
+    }
+    .img {
+      margin-bottom: 20px;
+    }
+    .container {
+      flex-direction: column;
+    }
+    .subtext {
+      margin-top: 20px;
+    }
+    .text {
+      align-items: center;
+      text-align: center;
+      padding: 0;
+    }
+    .order {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    section {
+      height: auto;
+      padding-bottom: 50px;
+    }
   }
 </style>

@@ -1,6 +1,7 @@
 <script>
   import FormatListBulleted from "svelte-material-icons/FormatListBulleted.svelte";
   import MessageReplyTextOutline from "svelte-material-icons/MessageReplyTextOutline.svelte";
+  import Shape from "svelte-material-icons/Shape.svelte";
 
   const logout = async () => {
     const res = fetch("/admin/logout");
@@ -15,6 +16,7 @@
 
   <nav>
     <a href="/admin/orders"><FormatListBulleted /><span>Orders</span> </a>
+    <a href="/admin/categories"><Shape /><span>Categories</span> </a>
     <a href="/admin/products"
       ><MessageReplyTextOutline /><span>Products</span>
     </a>

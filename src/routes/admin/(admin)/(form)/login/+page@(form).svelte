@@ -43,4 +43,7 @@
   button {
     margin-top: 30px;
   }
+  section {
+    padding: 0;
+  }
 </style>

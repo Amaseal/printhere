@@ -273,4 +273,26 @@
     display: grid;
     place-items: center;
   }
+
+  @media only screen and (max-width: 600px) {
+    .container {
+      flex-direction: column;
+    }
+    .image {
+      width: 100%;
+      height: 50%;
+    }
+    .info {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+    }
+    .quantities,
+    .sizes {
+      gap: 10px;
+    }
+    .file {
+      width: 100%;
+    }
+  }
 </style>

@@ -21,6 +21,13 @@
       <h3>Cart is empty</h3>
     {/if}
     <hr />
+    <div class="promo">
+      <label for="promo">Promocode</label>
+      <div class="flex align">
+        <input type="text" name="promo" />
+        <button class="button">apply</button>
+      </div>
+    </div>
     <div class="checkout flex align">
       <h3>Total: {total.toFixed(2)} Eur</h3>
       <a
@@ -40,6 +47,10 @@
 >
 
 <style>
+  .promo {
+    margin-top: auto;
+    margin-bottom: 20px;
+  }
   h2 {
     margin-bottom: 30px;
   }
@@ -76,7 +87,9 @@
     background-color: var(--secondary-color);
   }
   .checkout {
-    margin-top: auto;
     justify-content: space-between;
+  }
+  input {
+    margin-right: 10px;
   }
 </style>

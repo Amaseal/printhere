@@ -86,3 +86,8 @@ model File {
 
 
 }
+
+model Promo {
+  id Int @id @default(autoincrement())
+  code String
+}

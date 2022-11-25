@@ -15,6 +15,8 @@
     display: flex;
   }
   .app {
-    padding: 20px;
+    padding: 30px;
+    width: 100%;
+    background-color: var(--secondary-color);
   }
 </style>

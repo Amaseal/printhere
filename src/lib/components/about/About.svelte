@@ -80,4 +80,21 @@
       transform: translateX(-40%);
     }
   }
+
+  @media only screen and (max-width: 600px) {
+    .space {
+      flex-direction: column;
+    }
+
+    li {
+      font-size: 16px;
+    }
+    ol {
+      gap: 20px;
+      margin-bottom: 50px;
+    }
+    section {
+      padding: 50px 0 75px 0;
+    }
+  }
 </style>

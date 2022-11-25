@@ -17,14 +17,15 @@
 
 <header>
   <div class="container flex align">
+    {#if width < 900}
+      <MobileNav />
+    {/if}
     <a href="/">
       <img src="../logo.svg" alt="PrintHere logo" />
     </a>
 
     {#if width > 900}
       <DesktopNav />
-    {:else}
-      <MobileNav />
     {/if}
     <button class="cart" on:click={() => ($globals.cart = !$globals.cart)}>
       <span>{amount}</span>
@@ -46,6 +47,7 @@
   }
   img {
     width: 180px;
+    padding: 10px;
   }
   .cart {
     display: flex;
@@ -74,5 +76,13 @@
     right: 0;
     background-color: var(--primary-color);
     cursor: pointer;
+  }
+  @media only screen and (max-width: 600px) {
+    img {
+      height: 50px;
+    }
+    .container {
+      justify-content: space-between;
+    }
   }
 </style>
