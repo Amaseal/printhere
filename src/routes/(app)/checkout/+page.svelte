@@ -1,5 +1,4 @@
 <script>
-  import Close from "svelte-material-icons/Close.svelte";
   import { fly, fade } from "svelte/transition";
   import { globals } from "$lib/scripts/globals";
   import { cart } from "$lib/scripts/cart";
@@ -8,9 +7,6 @@
   import { goto } from "$app/navigation";
 
   import { PUBLIC_STRIPE_KEY } from "$env/static/public";
-  import { PUBLIC_MAPS_KEY } from "$env/static/public";
-
-  import { GooglePlacesAutocomplete } from "@beyonk/svelte-googlemaps";
 
   import { loadStripe } from "@stripe/stripe-js";
   import { Elements, PaymentElement } from "svelte-stripe";
@@ -32,11 +28,24 @@
   let shippingOption = 0;
   let processing = false;
 
+  let form = {
+    name: "",
+    surname: "",
+    email: "",
+    phone: "",
+    adress: "",
+    shippingOption,
+  };
+
+  $: console.log(form);
+
+  let omnivaAdress;
+
+  $: console.log(omnivaAdress);
+
   $: total = $cart.items.reduce((prev, cur) => {
     return prev + cur.price;
   }, 0);
-
-  $: console.log(JSON.stringify(shippingOption));
 
   const getClientSecret = async () => {
     const res = await fetch("./stripe", {
@@ -53,6 +62,16 @@
   async function submit() {
     if (processing) return;
     processing = true;
+
+    const response = await fetch("./pay", {
+      method: "POST",
+      headers: {
+        "content-type": "aplication/json",
+      },
+      body: JSON.stringify({ form, $cart }),
+    });
+
+    console.log(response);
 
     const result = await stripe.confirmPayment({
       elements,
@@ -79,47 +98,67 @@
     }
   });
 
-  const checkPromo = async () => {
-    const res = await fetch("./stripe", {
-      method: "post",
-      headers: {
-        "content-type": "aplication/json",
-      },
-      body: JSON.stringify({ $cart, shippingOption, paymentIntent: data }),
-    });
-    data = await res.json();
-    console.log(data);
-  };
-
-  const autocomplete = (ev) => {
-    console.log(ev);
-  };
+  // const checkPromo = async () => {
+  //   const res = await fetch("./stripe", {
+  //     method: "post",
+  //     headers: {
+  //       "content-type": "aplication/json",
+  //     },
+  //     body: JSON.stringify({ $cart, shippingOption, paymentIntent: data }),
+  //   });
+  //   data = await res.json();
+  //   console.log(data);
+  // };
 </script>
 
 <section>
   <div class="container flex">
     <div class="info">
       {#if $cart.items.length > 0}
-        <form on:submit|preventDefault={submit}>
+        <form on:submit|preventDefault={submit} method="POST" action="?/order">
           <div class="row flex">
             <div class="input">
               <label for="name">Name</label>
-              <input type="text" />
+              <input
+                bind:value={form.name}
+                required
+                type="text"
+                name="name"
+                id="name"
+              />
             </div>
             <div class="input">
               <label for="name">Surname</label>
-              <input type="text" />
+              <input
+                bind:value={form.surname}
+                required
+                type="text"
+                name="surname"
+                id="surname"
+              />
             </div>
           </div>
 
           <div class="row flex">
             <div class="input">
               <label for="name">Email</label>
-              <input type="text" />
+              <input
+                bind:value={form.email}
+                required
+                type="email"
+                name="email"
+                id="email"
+              />
             </div>
             <div class="input">
               <label for="name">Phone:</label>
-              <input type="text" />
+              <input
+                bind:value={form.phone}
+                required
+                type="text"
+                name="phone"
+                id="phone"
+              />
             </div>
           </div>
           <div class="row flex">
@@ -149,19 +188,22 @@
             <div class="row">
               <div class="themed">
                 <label for="select">Please select parcel machine</label>
-                <Select {items} inputStyles="font-size: 14px" />
+                <Select
+                  {items}
+                  bind:value={form.adress}
+                  inputStyles="font-size: 14px"
+                />
               </div>
             </div>
-          {:else}
+          {:else if shippingOption === 20}
             <div class="row">
               <div class="input">
                 <label for="name">Please enter shipping address</label>
-                <GooglePlacesAutocomplete
-                  apiKey={PUBLIC_MAPS_KEY}
-                  on:placeChanged={autocomplete}
-                  ariaLabel="Adress"
-                  placeholder="Adress"
-                  types={["address"]}
+                <input
+                  bind:value={form.adress}
+                  type="text"
+                  name="address"
+                  id="adress"
                 />
               </div>
             </div>
@@ -205,18 +247,13 @@
         <h3>Total: {(total + shippingOption).toFixed(2)} Eur</h3>
       </div>
     </div>
-    <p>{error}</p>
   </div>
 </section>
 
-<button
-  class="close"
-  transition:fly={{ x: 300, duration: 200 }}
-  on:click={() => ($globals.cart = !$globals.cart)}
-  ><Close size="1.5em" /></button
->
-
 <style>
+  .hide {
+    display: none;
+  }
   h2 {
     margin-bottom: 30px;
   }
@@ -239,22 +276,7 @@
     right: 0;
     top: 100px;
   }
-  .close {
-    background-color: white;
-    border: none;
-    border-radius: 50%;
-    display: flex;
-    padding: 10px;
-    position: fixed;
-    top: 30px;
-    right: 450px;
-    cursor: pointer;
-    z-index: 999;
-  }
 
-  .close:hover {
-    background-color: var(--secondary-color);
-  }
   .checkout {
     margin-top: auto;
     justify-content: space-between;

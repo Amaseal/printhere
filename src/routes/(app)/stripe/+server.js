@@ -6,7 +6,6 @@ const stripe = new Stripe(process.env["STRIPE_SECRET_KEY"]);
 export async function POST({ request }) {
   const data = await request.json();
 
-  console.log(data);
   let search = [];
 
   data.$cart.items.map((item) => {
@@ -35,8 +34,6 @@ export async function POST({ request }) {
       },
     });
 
-    console.log(paymentIntent);
-
     return new Response(JSON.stringify(paymentIntent));
   } else {
     let total =
@@ -47,8 +44,6 @@ export async function POST({ request }) {
     paymentIntent = await stripe.paymentIntents.update(data.paymentIntent.id, {
       amount: total * 100,
     });
-
-    console.log(paymentIntent);
 
     return new Response(JSON.stringify(paymentIntent));
   }
