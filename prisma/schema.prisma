@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  userAuthToken String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  title    String
+  slug     String    @unique
+  products Product[]
+  imgUrl   String
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  title       String
+  slug        String     @unique
+  description String
+  imgUrl      String
+  sizes       Size[]
+  quantities  Quantity[]
+  prices      Price[]
+  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+}
+
+model Quantity {
+  id        Int     @id @default(autoincrement())
+  quantity  String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  Price     Price[]
+}
+
+model Size {
+  id        Int     @id @default(autoincrement())
+  size      String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  Price     Price[]
+}
+
+model Price {
+  id         Int      @id @default(autoincrement())
+  price      String
+  size       Size     @relation(fields: [sizeId], references: [id], onDelete: Cascade)
+  quantity   Quantity @relation(fields: [quantityId], references: [id], onDelete: Cascade)
+  sizeId     Int
+  quantityId Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+}

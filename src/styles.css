@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+
+/* PICO */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --primary: #00E269;
+  --primary-hover: #00CB5E;
+  --primary-focus: rgba(124, 179, 66, 0.125);
+  --primary-inverse: #FFF;
+  --background-color-accent: #E9E9E9;
+  --primary-inverse: black;
+}
+
+@media only screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #00E269;
+    --primary-hover: #00CB5E;
+    --primary-focus: rgba(124, 179, 66, 0.25);
+    --primary-inverse: #FFF;
+    --background-color: #202022;
+    --form-element-background-color: #202022;
+    --background-color-accent: #252429;
+    --modal-overlay-background-color: rgba(0, 0, 0, 0.3);
+    --card-background-color: #252429;
+    --card-sectionning-background-color: #202022;
+    --form-element-border-color: #363636;
+    
+  }
+}
+
+[data-theme="dark"] {
+  --primary: #00E269;
+  --background-color: #202022;
+  --form-element-background-color: #202022;
+  --primary-hover: #00CB5E;
+  --primary-focus: rgba(124, 179, 66, 0.25);
+  --primary-inverse: #FFF;
+  --background-color-accent: #252429;
+  --modal-overlay-background-color: rgba(0, 0, 0, 0.3);
+  --card-background-color: #252429;
+  --card-sectionning-background-color: #202022;
+  --form-element-border-color: #363636;
+}
+
+:root {
+  --form-element-active-border-color: var(--primary);
+  --form-element-focus-color: var(--primary-focus);
+  --switch-color: var(--primary-inverse);
+  --switch-checked-background-color: var(--primary);
+  --border-radius: 0.625rem;
+  --font-size: 16px
+  --font-family: 'Poppins', sans-serif;
+}
+
+/* reset */
+
+*,
+*:before,
+*:after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+  
+img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+}
+
+input, button, textarea, select {
+    font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+}
+
+#root, #__next {
+    isolation: isolate;
+}
+
+/* standart */
+
+img{
+  object-fit: cover;
+}
+
+.warning {
+  color: red;
+  border-color: red;
+}
+.warning:hover {
+  color: darkred;
+  border-color: darkred;
+}
+
+.align{
+  align-items: center
+}
+.align-b{
+  align-items: flex-end;
+}
+.flex{
+  display: flex;
+}
+
+.center{
+  display: grid;
+  place-items: center;
+}
+
+.collumn{
+  flex-direction: column;
+}
+
+.justify{
+  justify-content: space-between;
+}
+
+.small{
+  width: auto;
+  height: auto;
+  margin: 0 !important;
+}
+.gap {
+  gap: 10px;
+}
+
+.large-gap{
+  gap: 60px;
+}
+
+.reset{
+  margin: 0;
+  padding: 0;
+}
