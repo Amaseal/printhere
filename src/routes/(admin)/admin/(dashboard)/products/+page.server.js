@@ -79,12 +79,36 @@ const save = async ({ request }) => {
     })
   );
 
-  const priceObjects = prices.map((priceItem, index) => ({
-    price: priceItem,
-    product: { connect: { id: product.id } },
-    size: { connect: { id: createdSizes[index].id } },
-    quantity: { connect: { id: createdQuantities[index].id } },
-  }));
+  // const priceObjects = prices.map((priceItem, index) => ({
+  //   price: priceItem,
+  //   product: { connect: { id: product.id } },
+  //   size: { connect: { id: createdSizes[index].id } },
+  //   quantity: { connect: { id: createdQuantities[index].id } },
+  // }));
+
+  const priceObjects = createdSizes.flatMap((size, sizeIndex) =>
+    createdQuantities.map((quantity, quantityIndex) => {
+      const priceIndex = sizeIndex * createdQuantities.length + quantityIndex;
+      return {
+        size: {
+          connect: {
+            id: size.id,
+          },
+        },
+        quantity: {
+          connect: {
+            id: quantity.id,
+          },
+        },
+        product: {
+          connect: {
+            id: product.id,
+          },
+        },
+        price: prices[priceIndex],
+      };
+    })
+  );
 
   const createdPrices = await Promise.all(
     priceObjects.map(async (priceItem) => {

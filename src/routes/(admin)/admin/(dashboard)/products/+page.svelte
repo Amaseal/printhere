@@ -127,7 +127,7 @@
 										<button
 											type="button"
 											on:click={() => removeSize(index)}
-											class="outline delete warning">-</button
+											class="outline delete warning small">-</button
 										>
 									</div>
 								{/each}
@@ -153,7 +153,7 @@
 										<button
 											type="button"
 											on:click={() => removeQuantity(index)}
-											class="outline delete warning">-</button
+											class="outline delete warning small">-</button
 										>
 									</div>
 								{/each}
@@ -170,7 +170,7 @@
 						</div>
 						<div class="row sizes">
 							{#each prices as price}
-								<div class="grid">
+								<div class="flex align-b gap">
 									<div>
 										<label for="pricesizes">Size</label>
 										<input type="text" value={price.size} name="pricesizes" readonly />
@@ -224,10 +224,9 @@
 		resize: none;
 	}
 	.sizes {
-		height: 100%;
-		max-height: 60vh;
+		max-height: 70vh;
 		width: 300px;
-		overflow-y: scroll;
+		overflow-y: auto;
 		padding-right: 10px;
 	}
 </style>
