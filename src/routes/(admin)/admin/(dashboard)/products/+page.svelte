@@ -12,34 +12,27 @@
 
 	let sizes = [{ value: '' }];
 	let quantities = [{ value: '' }];
-	let prices = [];
 
-	function makePrices() {
-		prices = sizes
-			.map((size) => quantities.map((quantity) => ({ size: size.value, quantity: quantity.value })))
-			.reduce((a, b) => a.concat(b), []);
-	}
+	$: prices = sizes.flatMap((size) =>
+		quantities.map((quantity) => ({ size: size.value, quantity: quantity.value }))
+	);
 
 	function addSize() {
 		sizes = [...sizes, { value: '' }];
-		makePrices();
 	}
 
 	$: console.log(prices);
 
 	function removeSize(index) {
 		sizes = sizes.filter((_, i) => i !== index);
-		makePrices();
 	}
 
 	function addQuantity() {
 		quantities = [...quantities, { value: '' }];
-		makePrices();
 	}
 
 	function removeQuantity(index) {
 		quantities = quantities.filter((_, i) => i !== index);
-		makePrices();
 	}
 
 	let open = false;
@@ -126,7 +119,7 @@
 						<div class="row sizes">
 							{#if sizes.length > 0}
 								{#each sizes as size, index}
-									<div class="flex align-b">
+									<div class="flex gap align-b">
 										<div class="row">
 											<label for="size">Size</label>
 											<input type="text" name="size" bind:value={size.value} />
@@ -151,10 +144,10 @@
 						<div class="row sizes">
 							{#if quantities.length > 0}
 								{#each quantities as quantity, index}
-									<div class="flex align-b">
+									<div class="flex align-b gap">
 										<div class="row">
 											<label for="quantity">Quantity</label>
-											<input type="text" name="quantity" bind:value={quantity.value} />
+											<input type="number" name="quantity" bind:value={quantity.value} />
 										</div>
 
 										<button
@@ -178,8 +171,18 @@
 						<div class="row sizes">
 							{#each prices as price}
 								<div class="grid">
-									<p>{price.size} {price.quantity}</p>
-									<input type="text" />
+									<div>
+										<label for="pricesizes">Size</label>
+										<input type="text" value={price.size} name="pricesizes" readonly />
+									</div>
+									<div>
+										<label for="pricequantities">Quantity</label>
+										<input type="text" value={price.quantity} name="pricequantities" readonly />
+									</div>
+									<div>
+										<label for="price">Price</label>
+										<input type="text" name="price" required />
+									</div>
 								</div>
 							{/each}
 						</div>
@@ -189,7 +192,6 @@
 						<button on:click={() => (open = false)} class="secondary">Cancel</button>
 					</div>
 				</form>
-				{sizes}
 			</article>
 		</dialog>
 	{/if}
@@ -202,6 +204,8 @@
 	article {
 		width: 100%;
 		max-width: 100%;
+		margin: 0;
+		height: 100%;
 	}
 
 	dialog {
@@ -220,7 +224,8 @@
 		resize: none;
 	}
 	.sizes {
-		max-height: 40vh;
+		height: 100%;
+		max-height: 60vh;
 		width: 300px;
 		overflow-y: scroll;
 		padding-right: 10px;
