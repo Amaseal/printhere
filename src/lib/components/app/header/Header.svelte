@@ -1,5 +1,7 @@
 <script>
 	import Cart from 'svelte-material-icons/Cart.svelte';
+	import { globals } from '$lib/scripts/globals';
+	import CartComponent from '$lib/components/app/cartcomponent/CartComponent.svelte';
 </script>
 
 <header>
@@ -25,8 +27,14 @@
 				<li><a href="/about">About</a></li>
 			</ul>
 			<li class="flex align">
-				<a href="?open" role="button" class="flex cart"><Cart size="20px" /></a>
+				<a href="?open" role="button" class="flex cart" on:click={() => ($globals.cart = true)}
+					><Cart size="20px" /></a
+				>
 			</li>
+
+			{#if $globals.cart === true}
+				<CartComponent />
+			{/if}
 		</nav>
 	</div>
 </header>

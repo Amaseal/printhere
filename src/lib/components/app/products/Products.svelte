@@ -6,7 +6,7 @@
 <section>
 	<div class="container">
 		<div class="flex gap">
-			{#each data.products as product}
+			{#each data.category.products as product}
 				<article>
 					<a href="{$page.params.slug ?? ''}/{product.slug}" class="flex collumn align">
 						<div class="img-container">

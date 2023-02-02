@@ -1,10 +1,17 @@
 import { db } from '$lib/scripts/db';
 
-export async function load() {
-	const products = await db.product.findMany();
-	if (products) {
-		return { products };
+export async function load({ params }) {
+	const category = await db.category.findUnique({
+		where: {
+			slug: params.slug
+		},
+		include: {
+			products: true
+		}
+	});
+	if (category) {
+		return { category };
 	} else {
-		return { products: false };
+		return { category: false };
 	}
 }
