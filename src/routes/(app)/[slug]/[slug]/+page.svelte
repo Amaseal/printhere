@@ -17,8 +17,8 @@
 				<a href="/{data.product.category.slug}">{data.product.category.title}</a>
 				<h1>{data.product.title}</h1>
 				<p>{data.product.description}</p>
-
-				<div class="flex gap">
+				<h4>Please slect a size:</h4>
+				<div class="grid gap">
 					{#each data.product.sizes as size}
 						<div class="radio">
 							<input
@@ -32,8 +32,8 @@
 						</div>
 					{/each}
 				</div>
-
-				<div class="flex gap">
+				<h4>Please slect a prefered quantity:</h4>
+				<div class="grid gap">
 					{#each data.product.quantities as quantity}
 						<div class="radio">
 							<input
@@ -47,8 +47,10 @@
 						</div>
 					{/each}
 				</div>
+				<h4>Upload a file:</h4>
+				<input type="file" name="file" id="file" />
 
-				<h4>{price.price}</h4>
+				<h3>Total: {price.price}</h3>
 			</div>
 		</div>
 	</div>
@@ -56,9 +58,10 @@
 
 <style>
 	.radio > label {
+		display: grid;
+		place-items: center;
 		height: 60px;
-		width: 200px;
-		padding: 10px;
+		padding: 10px 20px;
 		background-color: var(--background-color-accent);
 		border: 1px solid var(--background-color-accent);
 		border-radius: var(--border-radius);
