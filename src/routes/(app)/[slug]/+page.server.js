@@ -12,6 +12,6 @@ export async function load({ params }) {
   if (category) {
     return { category };
   } else {
-    return { cateogry: false };
+    return { category: false };
   }
 }
