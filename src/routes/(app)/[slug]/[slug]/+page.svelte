@@ -1,18 +1,28 @@
 <script>
 	import Cart from 'svelte-material-icons/Cart.svelte';
+	import { cart } from '$lib/scripts/cart';
 	export let data;
+
+	$: console.log($cart);
 
 	let selectedSize = data.product.sizes[0].id;
 	let selectedQuantity = data.product.quantities[0].id;
+
+	$: console.log({ selectedQuantity }, { selectedSize });
 
 	$: selectedPrice = data.product.prices.find(
 		(x) => x.sizeId === selectedSize && x.quantityId === selectedQuantity
 	);
 
 	let selectedFile;
+	let uploadedFile;
+	$: console.log(uploadedFile);
 
-	const handleUpload = async () => {
+	const handleUpload = async (event) => {
 		const formData = new FormData();
+		if (event.target.files && event.target.files.length > 0) {
+			selectedFile = event.target.files[0];
+		}
 		formData.append('file', selectedFile);
 
 		try {
@@ -21,8 +31,7 @@
 				body: formData,
 				enctype: 'multipart/form-data'
 			});
-			const data = await response.json();
-			console.log(data);
+			uploadedFile = await response.json();
 		} catch (error) {
 			console.log(error);
 		}
@@ -32,20 +41,18 @@
 		let item = {
 			product: {
 				title: data.product.title,
-				id: data.product.id
+				id: data.product.id,
+				imgUrl: data.product.imgUrl
 			},
-			size: {
-				size: selectedSize.size,
-				id: selectedSize.id
-			},
-			quantity: {
-				quantity: selectedQuantity.quantity,
-				id: selectedQuantity.id
-			},
+			size: data.product.sizes.find((item) => item.id === selectedSize),
+			quantity: data.product.quantities.find((item) => item.id === selectedQuantity),
 			file: {
-				file: 'file'
-			}
+				file: uploadedFile
+			},
+			price: selectedPrice
 		};
+
+		$cart.items = [...$cart.items, item];
 	};
 </script>
 
@@ -62,55 +69,54 @@
 				<h1>{data.product.title}</h1>
 				<p>{data.product.description}</p>
 
-				<form action="">
-					<p><b>Select desired size:</b></p>
+				<p><b>Select desired size:</b></p>
 
-					<div class="flex gap inputs">
-						{#each data.product.sizes as size}
-							<div class="radio">
-								<input
-									type="radio"
-									name="size"
-									id={size.size}
-									bind:group={selectedSize}
-									value={size.id}
-								/>
-								<label for={size.size}>{size.size}</label>
-							</div>
-						{/each}
-					</div>
+				<div class="flex gap inputs">
+					{#each data.product.sizes as size}
+						<div class="radio">
+							<input
+								type="radio"
+								name="size"
+								id={size.size}
+								bind:group={selectedSize}
+								value={size.id}
+							/>
+							<label for={size.size}>{size.size}</label>
+						</div>
+					{/each}
+				</div>
 
-					<p><b>Select prefered quantity:</b></p>
+				<p><b>Select prefered quantity:</b></p>
 
-					<div class="flex gap inputs">
-						{#each data.product.quantities as quantity}
-							<div class="radio">
-								<input
-									type="radio"
-									name="quantity"
-									id={quantity.quantity}
-									bind:group={selectedQuantity}
-									value={quantity.id}
-								/>
-								<label for={quantity.quantity}>{quantity.quantity}</label>
-							</div>
-						{/each}
-					</div>
+				<div class="flex gap inputs">
+					{#each data.product.quantities as quantity}
+						<div class="radio">
+							<input
+								type="radio"
+								name="quantity"
+								id={quantity.quantity}
+								bind:group={selectedQuantity}
+								value={quantity.id}
+							/>
+							<label for={quantity.quantity}>{quantity.quantity}</label>
+						</div>
+					{/each}
+				</div>
 
-					<p><b>Upload a file:</b></p>
-					<input
-						type="file"
-						name="file"
-						id="file"
-						accept=".jpg, .png, .pdf"
-						bind:value={selectedFile}
-						on:change={handleUpload}
-					/>
+				<p><b>Upload a file:</b></p>
+				<input
+					type="file"
+					name="file"
+					id="file"
+					accept="application/pdf, image/*"
+					on:change={handleUpload}
+				/>
 
-					<h4>Total: {Number(selectedPrice.price).toFixed(2)}</h4>
+				<h4>Total: {Number(selectedPrice.price).toFixed(2)}</h4>
 
-					<button class="small flex gap align">Add to cart <Cart /></button>
-				</form>
+				<button disabled={!selectedFile} class="small flex gap align" on:click={addToCart}
+					>Add to cart <Cart /></button
+				>
 			</div>
 		</div>
 	</div>
