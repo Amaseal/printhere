@@ -3,7 +3,16 @@
 	import { globals } from '$lib/scripts/globals';
 	import { fly } from 'svelte/transition';
 	import Close from 'svelte-material-icons/Close.svelte';
-	import TrashCanOutline from 'svelte-material-icons/TrashCanOutline.svelte';
+	import Cart from 'svelte-material-icons/Cart.svelte';
+
+	const removeProduct = (index) => {
+		$cart.items.splice(index, 1);
+		$cart = $cart;
+	};
+
+	$: total = $cart.items.reduce((prev, cur) => {
+		return prev + Number(cur.price.price);
+	}, 0);
 </script>
 
 <section>
@@ -11,23 +20,31 @@
 		<a class="close" role="button" href="#close" on:click={() => ($globals.cart = false)}
 			><Close size="20px" /></a
 		>
-		<h1>Your Cart:</h1>
+		<h4 class="flex align gap"><Cart size="20px" />Your Cart:</h4>
 
 		{#if $cart.items.length > 0}
 			{#each $cart.items as item, index}
-				<div class="flex gap align item">
+				<div class="flex gap align item justify">
 					<img src={item.product.imgUrl} alt="" />
-					<div>
-						<h5>{item.product.title}</h5>
+					<div class="info">
+						<h6>{item.product.title}</h6>
 						<div class="flex gap">
-							<p>Quantity:<b>{item.quantity.quantity}</b></p>
-							<p>Size: <b>{item.size.size}</b></p>
+							<p class="pin">{item.quantity.quantity}</p>
+							<p class="pin">{item.size.size}</p>
 						</div>
 					</div>
-					<a href="#delete" role="button" class="delete"><TrashCanOutline /></a>
+					<div class="flex collumn end">
+						<a href="#delete" role="button" class="delete" on:click={() => removeProduct(index)}
+							><Close /></a
+						>
+						<h5 class="price">{Number(item.price.price).toFixed(2)}</h5>
+					</div>
 				</div>
 			{/each}
-			<a href="/checkout" role="button" class="checkout">Checkout</a>
+			<h5>Total: {total.toFixed(2)}</h5>
+			<a href="/checkout" on:click={() => ($globals.cart = false)} role="button" class="checkout"
+				>Checkout</a
+			>
 		{:else}
 			<h2>Cart is empty</h2>
 		{/if}
@@ -35,14 +52,39 @@
 </section>
 
 <style>
-	.checkout {
+	h4 {
+		border-bottom: 1px solid var(--color);
+		padding-bottom: 30px;
+	}
+	h5 {
 		margin-top: auto;
 	}
+	.info {
+		margin-right: auto;
+	}
+	.end {
+		align-items: flex-end;
+		height: 100%;
+	}
+
+	.end > h5 {
+		margin-bottom: 0;
+	}
+	.price {
+		margin-top: auto;
+		margin-bottom: 0;
+	}
+	.pin {
+		padding: 5px 10px;
+		background-color: var(--background-color-accent);
+		border-radius: var(--border-radius);
+	}
 	.delete {
-		margin-bottom: auto;
+		display: block;
 		background-color: transparent;
 		border-color: var(--del-color);
 		color: var(--del-color);
+		margin: 0;
 	}
 	.delete:hover {
 		background-color: var(--del-color);
@@ -51,6 +93,8 @@
 
 	.item {
 		margin-bottom: var(--spacing);
+		padding-bottom: var(--spacing);
+		border-bottom: 1px solid var(--color);
 	}
 	p {
 		margin-bottom: 0;
@@ -82,18 +126,18 @@
 		transition: all 0.2s ease;
 	}
 
-	h5 {
-		margin-bottom: 10px;
-	}
-
 	.cart {
 		padding: var(--spacing);
+		padding-right: 30px;
 		width: 350px;
 		height: 100%;
 		position: absolute;
 		top: 0;
 		right: 0;
-		background-color: var(--background-color-accent);
+		background-color: var(--background-color);
 		z-index: 99999;
+	}
+	.checkout {
+		margin-bottom: 20px;
 	}
 </style>

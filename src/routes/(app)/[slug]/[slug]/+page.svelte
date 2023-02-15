@@ -3,25 +3,46 @@
 	import { cart } from '$lib/scripts/cart';
 	export let data;
 
-	$: console.log($cart);
+	import toast from 'svelte-french-toast';
 
 	let selectedSize = data.product.sizes[0].id;
 	let selectedQuantity = data.product.quantities[0].id;
-
-	$: console.log({ selectedQuantity }, { selectedSize });
 
 	$: selectedPrice = data.product.prices.find(
 		(x) => x.sizeId === selectedSize && x.quantityId === selectedQuantity
 	);
 
+	let error;
+
 	let selectedFile;
 	let uploadedFile;
-	$: console.log(uploadedFile);
 
 	const handleUpload = async (event) => {
 		const formData = new FormData();
 		if (event.target.files && event.target.files.length > 0) {
 			selectedFile = event.target.files[0];
+
+			let size = (selectedFile.size / (1024 * 1024)).toFixed(2);
+			if (size > 5) {
+				toast.error('File too large.', {
+					position: 'bottom-center'
+				});
+				error = true;
+				return;
+			} else if (size <= 0.5) {
+				toast.success('Small file size, only proceed if confident of quality', {
+					iconTheme: {
+						primary: '#FFCC00',
+						secondary: '#FFFFFF'
+					},
+					position: 'bottom-center'
+				});
+				error = false;
+			} else {
+				error = false;
+			}
+			console.log(selectedFile);
+			console.log(selectedFile.size);
 		}
 		formData.append('file', selectedFile);
 
@@ -53,6 +74,10 @@
 		};
 
 		$cart.items = [...$cart.items, item];
+
+		toast.success('Added to cart.', {
+			position: 'bottom-center'
+		});
 	};
 </script>
 
@@ -111,10 +136,9 @@
 					accept="application/pdf, image/*"
 					on:change={handleUpload}
 				/>
-
 				<h4>Total: {Number(selectedPrice.price).toFixed(2)}</h4>
 
-				<button disabled={!selectedFile} class="small flex gap align" on:click={addToCart}
+				<button disabled={!selectedFile || error} class="small flex gap align" on:click={addToCart}
 					>Add to cart <Cart /></button
 				>
 			</div>

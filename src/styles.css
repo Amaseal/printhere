@@ -95,6 +95,30 @@ img{
   object-fit: cover;
 }
 
+.toast-warn{
+  padding: var(--spacing);
+  background-color: orange;
+  color: white;
+  border-radius: var(--border-radius);
+  width: 100%;
+}
+
+.toast-ok{
+  background-color: var(--primary);
+  padding: var(--spacing);
+  color: var(--primary);
+  border-radius: var(--border-radius);
+  width: 100%;
+}
+
+.toast-err{
+  padding: var(--spacing);
+  background-color: var(--color-del);
+  color: var(--color-del);
+  border-radius: var(--border-radius);
+  width: 100%;
+}
+
 .warning {
   color: red;
   border-color: red;
