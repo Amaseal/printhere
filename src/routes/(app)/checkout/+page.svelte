@@ -4,6 +4,8 @@
 	import Cart from 'svelte-material-icons/Cart.svelte';
 	import { onMount } from 'svelte';
 
+	let selectedShipping;
+
 	$: total = $cart.items.reduce((prev, cur) => {
 		return prev + Number(cur.price.price);
 	}, 0);
@@ -37,6 +39,27 @@
 					</div>
 				</div>
 				<br />
+				<h5>Shipping</h5>
+				<div class="info flex gap align">
+					<div class="radio">
+						<input bind:group={selectedShipping} type="radio" name="shipping" id="omniva" />
+						<label for="omniva">
+							<div class="flex align gap">
+								<img src="./Omniva_symbol_orange.svg" alt="" />
+								Omniva
+							</div>
+						</label>
+					</div>
+					<div class="radio">
+						<input bind:group={selectedShipping} type="radio" name="shipping" id="post" />
+						<label for="post">
+							<div class="flex align gap">
+								<img src="./LP_logo.svg" alt="" />
+								Standart shipping
+							</div></label
+						>
+					</div>
+				</div>
 				<div class="info">
 					<h5>Payment info:</h5>
 					<label for="payment" />
@@ -56,7 +79,7 @@
 									<p class="pin">{item.size.size}</p>
 								</div>
 							</div>
-							<div class="flex collumn end">
+							<div class="flex collumn start">
 								<h5 class="price">{Number(item.price.price).toFixed(2)}</h5>
 							</div>
 						</div>
@@ -89,16 +112,12 @@
 	.info {
 		margin-right: auto;
 	}
-	.end {
-		align-items: flex-end;
+	.start {
+		align-items: flex-start;
 		height: 100%;
 	}
 
-	.end > h5 {
-		margin-bottom: 0;
-	}
 	.price {
-		margin-top: auto;
 		margin-bottom: 0;
 	}
 	.pin {
@@ -121,9 +140,18 @@
 		border-radius: var(--border-radius);
 		background-color: var(--primary);
 	}
+	.start > h5 {
+		margin-top: 16px;
+	}
 
 	h5 {
 		margin-bottom: 10px;
+	}
+
+	label > .flex > img {
+		height: 40px;
+		width: 40px;
+		background-color: transparent;
 	}
 
 	.cart {
@@ -132,5 +160,26 @@
 		width: 350px;
 		height: 80vh;
 		background-color: var(--background-color-accent);
+	}
+
+	.radio > label {
+		display: grid;
+		place-items: center;
+		height: 60px;
+		padding: 10px;
+		background-color: var(--background-color);
+		border: 1px solid var(--background-color);
+		border-radius: var(--border-radius);
+	}
+
+	.radio > input {
+		display: none;
+	}
+	.radio {
+		flex: 1;
+	}
+
+	input:checked ~ label {
+		border: 1px solid var(--primary);
 	}
 </style>
