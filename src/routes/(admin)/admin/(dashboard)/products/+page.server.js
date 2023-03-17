@@ -105,7 +105,7 @@ const save = async ({ request }) => {
             id: product.id,
           },
         },
-        price: prices[priceIndex],
+        price: Number(prices[priceIndex]),
       };
     })
   );

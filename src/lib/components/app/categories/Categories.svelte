@@ -24,6 +24,8 @@
 		padding: 0;
 		max-width: 25%;
 		overflow: hidden;
+		background-color: transparent;
+		box-shadow: none;
 	}
 	.img-container {
 		background-color: var(--primary);
@@ -31,6 +33,7 @@
 		overflow: hidden;
 		display: grid;
 		place-items: center;
+		border-radius: var(--border-radius);
 	}
 	img {
 		height: 130%;

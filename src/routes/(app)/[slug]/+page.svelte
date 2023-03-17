@@ -4,6 +4,10 @@
 	export let data;
 </script>
 
+<svelte:head>
+	<title>{data.category.title}</title>
+</svelte:head>
+
 <section>
 	<div class="container">
 		<Products {data} />

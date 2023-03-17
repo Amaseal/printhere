@@ -22,6 +22,7 @@
 		"prisma": "^4.7.1",
 		"stripe": "^11.9.1",
 		"svelte": "^3.54.0",
+		"svelte-loading-spinners": "^0.3.4",
 		"svelte-stripe": "^0.0.21",
 		"vite": "^4.0.0",
 		"vite-imagetools": "^4.0.12"
@@ -32,8 +33,12 @@
 		"@prisma/client": "^4.8.0",
 		"bcrypt": "^5.1.0",
 		"imagetools-core": "^3.2.3",
+		"node-cron": "^3.0.2",
+		"nodemailer": "^6.9.1",
 		"slugify": "^1.6.5",
+		"svelte-email": "^0.0.4",
 		"svelte-french-toast": "^1.0.3",
-		"svelte-material-icons": "^2.0.4"
+		"svelte-material-icons": "^2.0.4",
+		"svelte-select": "^5.2.1"
 	}
 }

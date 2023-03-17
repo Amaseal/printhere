@@ -10,6 +10,7 @@
   --primary-inverse: #FFF;
   --background-color-accent: #E9E9E9;
   --primary-inverse: black;
+
 }
 
 @media only screen and (prefers-color-scheme: dark) {
@@ -25,7 +26,7 @@
     --card-background-color: #252429;
     --card-sectionning-background-color: #202022;
     --form-element-border-color: #363636;
-    
+
   }
 }
 
@@ -41,6 +42,7 @@
   --card-background-color: #252429;
   --card-sectionning-background-color: #202022;
   --form-element-border-color: #363636;
+
 }
 
 :root {
@@ -51,6 +53,10 @@
   --border-radius: 0.625rem;
   --font-size: 16px
   --font-family: 'Poppins', sans-serif;
+
+  --background: var(--background-color)
+  --colorBackground: var(--background-color)
+
 }
 
 /* reset */
@@ -147,9 +153,14 @@ img{
   flex-direction: column;
 }
 
+.flex.center{
+justify-content: center;
+}
+
 .justify{
   justify-content: space-between;
 }
+
 
 .small{
   width: auto;
@@ -166,4 +177,8 @@ img{
 .reset{
   margin: 0;
   padding: 0;
+}
+
+.value-container {
+  padding: 0 !important;
 }

@@ -38,69 +38,79 @@ model Product {
   prices      Price[]
   category    Category   @relation(fields: [categoryId], references: [id])
   categoryId  Int
+  cartItem    cartItem[]
 }
 
 model Quantity {
-  id        Int     @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   quantity  String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
   Price     Price[]
+  cartItem  cartItem[]
 }
 
 model Size {
-  id        Int     @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   size      String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
   Price     Price[]
+  cartItem  cartItem[]
 }
 
 model Price {
-  id         Int      @id @default(autoincrement())
-  price      String
-  size       Size     @relation(fields: [sizeId], references: [id], onDelete: Cascade)
-  quantity   Quantity @relation(fields: [quantityId], references: [id], onDelete: Cascade)
+  id         Int        @id @default(autoincrement())
+  price      Int
+  size       Size       @relation(fields: [sizeId], references: [id], onDelete: Cascade)
+  quantity   Quantity   @relation(fields: [quantityId], references: [id], onDelete: Cascade)
   sizeId     Int
   quantityId Int
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId  Int
+  cartItem   cartItem[]
 }
 
-
 model Order {
-  id Int @id @default(autoincrement())
-  cart Cart?
+  id       Int       @id @default(autoincrement())
+  cart     Cart?
   customer Customer?
   shipping String
-  address String
-  shipped Boolean
-  done Boolean
-  total Int
+  address  String
+  ordered_at DateTime @default(now())
+  shipped  Boolean   @default(false)
+  done     Boolean   @default(false)
+  total    Int
 }
 
 model Cart {
-  id Int @id @default(autoincrement())
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int @unique
+  id        Int        @id @default(autoincrement())
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int        @unique
+  cartItems cartItem[]
 }
 
 model Customer {
-  id Int @id @default(autoincrement())
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int @unique
-  name  String
+  id      Int    @id @default(autoincrement())
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int    @unique
+  name    String
   surname String
-  email String
-  phone String
+  email   String
+  phone   String
 }
 
 model cartItem {
-  id Int @id @default(autoincrement())
-  product String
-  productId Int
-  quantity String
-  size String
-  price String
-  file String
+  id         Int      @id @default(autoincrement())
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  Int
+  size       Size     @relation(fields: [sizeId], references: [id])
+  quantity   Quantity @relation(fields: [quantityId], references: [id])
+  sizeId     Int
+  quantityId Int
+  price      Price    @relation(fields: [priceId], references: [id])
+  priceId    Int
+  file       String
+  Cart       Cart?    @relation(fields: [cartId], references: [id])
+  cartId     Int?
 }

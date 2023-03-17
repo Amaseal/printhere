@@ -41,13 +41,11 @@
 			} else {
 				error = false;
 			}
-			console.log(selectedFile);
-			console.log(selectedFile.size);
 		}
 		formData.append('file', selectedFile);
 
 		try {
-			const response = await fetch('/uploadfile', {
+			const response = await fetch('/api/uploadfile', {
 				method: 'POST',
 				body: formData,
 				enctype: 'multipart/form-data'
@@ -59,6 +57,7 @@
 	};
 
 	const addToCart = () => {
+		console.log(uploadedFile);
 		let item = {
 			product: {
 				title: data.product.title,
