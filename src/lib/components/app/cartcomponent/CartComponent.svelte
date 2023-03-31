@@ -140,4 +140,12 @@
 	.checkout {
 		margin-bottom: 20px;
 	}
+	@media only screen and (max-width: 600px) {
+		.cart {
+			width: 300px;
+		}
+		.close {
+			right: 320px;
+		}
+	}
 </style>

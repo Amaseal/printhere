@@ -5,19 +5,18 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { locations } from '$lib/scripts/omniva.js';
-
 	import { SyncLoader } from 'svelte-loading-spinners';
-
 	import { PUBLIC_STRIPE_KEY } from '$env/static/public';
-
 	import { loadStripe } from '@stripe/stripe-js';
 	import { Elements, PaymentElement } from 'svelte-stripe';
 
 	let stripe = null;
-	let data = null;
+
 	let processing = false;
 	let elements;
 	let selectedShipping = 'omniva';
+
+	let discount = 0;
 
 	let agreed = false;
 	let error = false;
@@ -28,6 +27,9 @@
 			value: val.NAME
 		};
 	});
+
+	let theme = 'flat';
+	let data = null;
 
 	const getClientSecret = async () => {
 		const res = await fetch('/api/stripe', {
@@ -40,19 +42,6 @@
 		data = await res.json();
 	};
 
-	const updateClientSecret = async () => {
-		const res = await fetch('/api/stripe', {
-			method: 'put',
-			headers: {
-				'content-type': 'aplication/json'
-			},
-			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost })
-		});
-		data = await res.json();
-	};
-
-	let theme = 'flat';
-
 	onMount(async () => {
 		if (window.matchMedia('(prefers-color-cheme: dark)').matches) {
 			theme = 'night';
@@ -64,12 +53,41 @@
 		}
 	});
 
-	$: shippingCost = selectedShipping === 'omniva' ? 10 : 20;
+	const updateClientSecret = async () => {
+		const res = await fetch('/api/stripe', {
+			method: 'put',
+			headers: {
+				'content-type': 'aplication/json'
+			},
+			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost, discount })
+		});
+		// data = await res.json();
+	};
+
+	$: shippingCost = selectedShipping === 'omniva' ? 5 : 10;
 
 	$: total =
 		$cart.items.reduce((prev, cur) => {
 			return prev + Number(cur.price.price);
-		}, 0) + shippingCost;
+		}, 0) *
+			(discount > 0 ? (100 - discount) / 100 : 1) +
+		shippingCost;
+
+	const getPromo = async (e) => {
+		const formData = new FormData(e.target);
+		const formProps = Object.fromEntries(formData);
+
+		const res = await fetch('/api/promo', {
+			method: 'put',
+			headers: {
+				'content-type': 'aplication/json'
+			},
+			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost, formProps })
+		});
+		data = await res.json();
+		console.log(data);
+		discount = data.promo;
+	};
 
 	async function pay(e) {
 		// avoid processing duplicates
@@ -92,6 +110,7 @@
 
 			data.append('cart', JSON.stringify($cart));
 			data.append('shippingCost', shippingCost);
+			data.append('discount', discount);
 
 			const response = await fetch('/api/saveOrder', {
 				method: 'POST',
@@ -102,10 +121,15 @@
 
 			if ((responseData.ok = true)) {
 				goto('/thank-you');
+				$cart.items = [];
 			}
 		}
 	}
 </script>
+
+<svelte:head>
+	<title>Checkout</title>
+</svelte:head>
 
 <section>
 	<div class="container">
@@ -197,6 +221,25 @@
 						{/if}
 					</div>
 					<br />
+					<h5>Promo Code</h5>
+					<div class="info">
+						<form class="promocode" on:submit|preventDefault={getPromo}>
+							<div class="flex align start gap promoitems">
+								<label for="promo">Code:</label>
+								<input type="text" name="promo" />
+
+								<button type="submit">Submit</button>
+								{#key discount}
+									{#if discount > 0}
+										<p>Discount: {discount} %</p>
+									{:else if data?.error}
+										<p class="error">{data.error}</p>
+									{/if}
+								{/key}
+							</div>
+						</form>
+					</div>
+					<br />
 					<h5>Payment info:</h5>
 					<div class="info">
 						<label for="payment" />
@@ -261,6 +304,20 @@
 </section>
 
 <style>
+	.promoitems > * {
+		width: 25%;
+	}
+	.promoitems > label {
+		width: auto;
+	}
+	.promocode {
+		width: 100%;
+
+		justify-content: start;
+	}
+	form > div > * {
+		margin: 0;
+	}
 	.spinner {
 		padding: 10px;
 	}
@@ -293,10 +350,10 @@
 	/* h5:first-of-type {
 		margin-top: auto;
 	} */
-	.start {
+	/* .start {
 		align-items: flex-start;
 		height: 100%;
-	}
+	} */
 
 	.price {
 		margin-bottom: 0;

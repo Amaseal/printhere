@@ -1,19 +1,23 @@
-import * as fs from "fs";
+import fs from "node:fs";
+import path from "node:path";
+import { Readable } from "node:stream";
 
 // ----- GET -----
-export async function GET({ params }) {
-  console.log({ params });
-  const fileUrl = params.file;
-  const fileName = fileUrl.slice(6);
+export async function GET({ url }) {
+  const fileUrl = path.normalize(`./${url.searchParams.get("file")}`);
   console.log(fileUrl);
-  let file = fs.readFile(`./${fileUrl}`);
-  console.log(file);
+  const fileName = fileUrl.slice(6);
+  console.log(fs.existsSync(`/${fileName}`));
+  if (!fs.existsSync(`/${fileName}`)) {
+    return new Response("not found", { status: 404 });
+  }
+  const nodejs_rstream = fs.createReadStream(fileName);
+  const web_rstream = Readable.toWeb(nodejs_rstream);
 
-  return new Response(file, {
-    status: 200,
+  return new Response(web_rstream, {
     headers: {
       "Content-type": "application/octet-stream; charset=utf-8",
-      // "Content-Disposition": `attachment; filename*="${fileName}"`,
+      "Content-Disposition": `attachment; filename*="${fileName}"`,
     },
   });
 }

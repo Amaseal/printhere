@@ -177,4 +177,9 @@
 		object-fit: cover;
 		border-radius: var(--border-radius);
 	}
+	@media only screen and (max-width: 600px) {
+		.grid {
+			gap: 30px;
+		}
+	}
 </style>

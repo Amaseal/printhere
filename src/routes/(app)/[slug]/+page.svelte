@@ -10,7 +10,7 @@
 
 <section>
 	<div class="container">
-		<Products {data} />
+		<Products products={data.category.products} />
 	</div>
 </section>
 

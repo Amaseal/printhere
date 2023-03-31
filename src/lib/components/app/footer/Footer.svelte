@@ -47,4 +47,19 @@
 	textarea {
 		resize: none;
 	}
+	@media only screen and (max-width: 600px) {
+		.container {
+			flex-direction: column;
+		}
+		.info {
+			order: 2;
+			text-align: center;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		form {
+			order: 1;
+		}
+	}
 </style>

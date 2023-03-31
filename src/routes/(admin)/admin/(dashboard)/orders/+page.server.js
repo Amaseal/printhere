@@ -1,6 +1,11 @@
 import { db } from "$lib/scripts/db";
-import * as fs from "fs";
-import { UPLOAD_PATH } from "$env/static/private";
+import { SECRET_MAIL_USER } from "$env/static/private";
+import { SECRET_MAIL_PASS } from "$env/static/private";
+
+import { render } from "svelte-email";
+
+import Shipped from "$lib/components/app/emails/Shipped.svelte";
+import nodemailer from "nodemailer";
 
 export async function load() {
   const orders = await db.order.findMany({
@@ -43,9 +48,6 @@ const remove = async ({ request }) => {
       },
     },
   });
-  console.log(order);
-
-  // const path = category.imgUrl.slice(2);
 
   order.cart.cartItems.forEach((item) => {
     fs.unlink(item.file, (err) => {
@@ -62,48 +64,63 @@ const remove = async ({ request }) => {
   });
 };
 
-const edit = async ({ request }) => {
+const save = async ({ request }) => {
   const data = await request.formData();
-  const title = data.get("title");
-  const slug = data.get("slug");
-  const file = data.get("image");
   const id = data.get("id");
+  const done = data.get("done");
+  const shipped = data.get("shipped");
+  const code = data.get("code");
 
-  const category = await db.category.findUnique({
-    where: {
-      id: Number(id),
-    },
-  });
+  const shippedTrue = shipped === "on" ? true : false;
+  const doneTrue = done === "on" ? true : false;
 
-  const path = category.imgUrl.slice(2);
-
-  fs.unlink(`${UPLOAD_PATH}${path}`, (err) => {
-    if (err) {
-      console.log(err);
-    }
-  });
-
-  await db.category.update({
+  const orderUpdate = await db.order.update({
     where: {
       id: Number(id),
     },
     data: {
-      title: title,
-      slug: slug,
-      imgUrl: `../images/${slug + "." + file.name.split(".").pop()}`,
+      done: doneTrue,
+      shipped: shippedTrue,
     },
   });
 
-  const fileData = await file.arrayBuffer();
-  fs.writeFile(
-    `${UPLOAD_PATH}/images/${slug + "." + file.name.split(".").pop()}`,
-    Buffer.from(fileData),
-    (err) => {
-      if (err) {
-        console.log(err);
-      }
-    }
-  );
+  if (shippedTrue === true) {
+    const order = await db.order.findUnique({
+      where: {
+        id: Number(id),
+      },
+      select: {
+        customer: true,
+      },
+    });
+    const transporter = nodemailer.createTransport({
+      host: "printhere.eu",
+      port: 465,
+      secure: true,
+
+      auth: {
+        user: SECRET_MAIL_USER,
+        pass: SECRET_MAIL_PASS,
+      },
+    });
+
+    const clientHtml = render({
+      template: Shipped,
+      props: {
+        client: order.customer,
+        code: code,
+      },
+    });
+
+    const shippedOptions = {
+      from: SECRET_MAIL_USER,
+      to: order.customer.email,
+      subject: "Order shipped",
+      html: clientHtml,
+    };
+
+    transporter.sendMail(shippedOptions);
+  }
 };
 
-export const actions = { remove, edit };
+export const actions = { remove, save };

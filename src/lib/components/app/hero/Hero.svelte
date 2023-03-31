@@ -8,7 +8,7 @@
 			<div class="info">
 				<h1>Fast and easy online printing service.</h1>
 				<p>Need to print a business card, some stickers, or promotional flyers?</p>
-				<div class="flex gap align">
+				<div class="flex gap align action">
 					<p class="reset"><strong>Print</strong></p>
 					<a href="/products" role="button" class="flex align"
 						><strong>Here</strong>
@@ -24,7 +24,7 @@
 
 <style>
 	h1 {
-		font-size: 70px;
+		font-size: calc(var(--font-size) * 2.2);
 		line-height: 1.2;
 	}
 	p {
@@ -45,5 +45,28 @@
 		display: grid;
 		place-items: center;
 		padding-top: 100px;
+	}
+	@media only screen and (max-width: 600px) {
+		section {
+			height: auto;
+		}
+		h1 {
+			font-size: calc(var(--font-size) * 1.4);
+		}
+		.info {
+			align-items: center;
+		}
+		.info > * {
+			text-align: center;
+		}
+		.action {
+			margin-bottom: calc(var(--typography-spacing-vertical) * 2);
+		}
+		img {
+			width: 70%;
+		}
+		.grid {
+			justify-items: center;
+		}
 	}
 </style>

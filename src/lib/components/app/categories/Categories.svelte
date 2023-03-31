@@ -4,7 +4,7 @@
 
 <section>
 	<div class="container">
-		<div class="flex gap">
+		<div class="grid gap">
 			{#each data.categories as category}
 				<article>
 					<a href="/{category.slug}" class="flex collumn align">
@@ -22,7 +22,6 @@
 <style>
 	article {
 		padding: 0;
-		max-width: 25%;
 		overflow: hidden;
 		background-color: transparent;
 		box-shadow: none;
@@ -47,5 +46,10 @@
 	}
 	h2 {
 		margin-top: 30px;
+	}
+	@media only screen and (max-width: 600px) {
+		h2 {
+			margin-bottom: 0;
+		}
 	}
 </style>

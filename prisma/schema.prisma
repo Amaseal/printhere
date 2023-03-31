@@ -80,7 +80,7 @@ model Order {
   ordered_at DateTime @default(now())
   shipped  Boolean   @default(false)
   done     Boolean   @default(false)
-  total    Int
+  total    Float
 }
 
 model Cart {
@@ -113,4 +113,16 @@ model cartItem {
   file       String
   Cart       Cart?    @relation(fields: [cartId], references: [id])
   cartId     Int?
+}
+
+model Promo {
+  id Int @id @default(autoincrement())
+  code String @unique
+  amount Int
+}
+
+model OrderCount {
+  id Int @id @default(autoincrement())
+  count Int
+  month String @unique
 }

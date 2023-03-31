@@ -21,6 +21,7 @@ export async function POST({ request }) {
   const shippingOption = await data.get("shipping");
   const address = await data.get("address");
   const terms = await data.get("terms");
+  const discount = await data.get("discount");
   const shippingCost = await data.get("shippingCost");
 
   if (terms !== "on") {
@@ -72,9 +73,10 @@ export async function POST({ request }) {
     },
   });
 
-  let total = prices.reduce((prev, cur) => {
-    return prev + cur.price;
-  }, 0);
+  let total =
+    prices.reduce((prev, cur) => {
+      return prev + cur.price;
+    }, 0) * (discount > 0 ? (100 - discount) / 100 : 1);
 
   const cartObjects = parsedCart.items.map((item, index) => ({
     product: {
@@ -135,10 +137,31 @@ export async function POST({ request }) {
     },
   });
 
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0"); // add leading zero if needed
+  const monthYearString = `${year}-${month}`;
+
+  const count = await db.orderCount.upsert({
+    where: {
+      month: monthYearString,
+    },
+    update: {
+      count: { increment: 1 },
+    },
+    create: {
+      month: monthYearString,
+      count: 1,
+    },
+  });
+
   const transporter = nodemailer.createTransport({
-    host: "cinevillaevent.lv",
+    host: "printhere.eu",
     port: 465,
-    secure: true,
+    // secure: true,
+    tls: {
+      rejectUnauthorized: false,
+    },
 
     auth: {
       user: SECRET_MAIL_USER,

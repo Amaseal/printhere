@@ -76,4 +76,17 @@
 			transform: translateX(-40%);
 		}
 	}
+
+	@media only screen and (max-width: 600px) {
+		section {
+			height: auto;
+		}
+		.item {
+			font-size: var(--font-size);
+			padding: 20px;
+		}
+		ol {
+			gap: 20px;
+		}
+	}
 </style>

@@ -23,9 +23,7 @@
 </svelte:head>
 
 <section>
-	<hgroup class="flex justify">
-		<h1>Orders</h1>
-	</hgroup>
+	<h1>Orders</h1>
 
 	<table>
 		<thead>
@@ -37,6 +35,8 @@
 				<th>Size</th>
 				<th>Quantity</th>
 				<th>Total</th>
+				<th style="text-align: center">Done</th>
+				<th style="text-align: center">Shipped</th>
 				<th class="last">Edit</th>
 				<th class="last">Delete</th>
 			</tr>

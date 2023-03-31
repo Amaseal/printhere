@@ -157,6 +157,9 @@ img{
 justify-content: center;
 }
 
+.start{
+  justify-content: start;
+}
 .justify{
   justify-content: space-between;
 }

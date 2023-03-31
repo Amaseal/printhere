@@ -12,25 +12,6 @@
 		year: 'numeric'
 	});
 
-	let link;
-
-	const downloadFile = async (file) => {
-		console.log(file);
-		await fetch(`/api/downloadFiles?file=${file}`, {
-			method: 'GET'
-		})
-			.then((response) => {
-				link = document.createElement('a');
-				link.download = file;
-				return response.blob();
-			})
-			.then((blob) => {
-				link.href = URL.createObjectURL(blob);
-				link.click();
-				URL.revokeObjectURL(link.href);
-			});
-	};
-
 	let editOpen = false;
 </script>
 
@@ -47,6 +28,9 @@
 	<th>{order.cart.cartItems[0].size.size}</th>
 	<th>{order.cart.cartItems[0].quantity.quantity}</th>
 	<th>{order.total.toFixed(2)}</th>
+	<th style="text-align: center"><input type="checkbox" bind:checked={order.done} disabled /></th>
+	<th style="text-align: center"><input type="checkbox" bind:checked={order.shipped} disabled /></th
+	>
 
 	<th class="last"
 		><button on:click={() => (editOpen = true)} class="primary outline small flex align"
@@ -70,93 +54,104 @@
 					><Close /></a
 				>
 			</header>
-			<div class="flex align justify">
-				<p>ID: {order.id}</p>
-				<p>Date: {date}</p>
-				<div>
-					<input type="checkbox" name="done" id="" />
-					<label for="done">Done</label>
+			<form action="?/save" method="post">
+				<input class="hidden" type="text" name="id" bind:value={order.id} />
+				<div class="flex align justify">
+					<p>ID: {order.id}</p>
+					<p>Date: {date}</p>
+					<div>
+						<input type="checkbox" name="done" id="" bind:checked={order.done} />
+						<label for="done" name="done">Done</label>
+					</div>
+					<div>
+						<input type="checkbox" name="shipped" id="" bind:checked={order.shipped} />
+						<label for="shipped" name="shipped">Shipped</label>
+					</div>
 				</div>
+
 				<div>
-					<input type="checkbox" name="shipped" id="" />
-					<label for="shipped">Shipped</label>
-				</div>
-			</div>
-
-			<div>
-				<h4>Client</h4>
-				<table>
-					<thead>
-						<tr>
-							<td>Name</td>
-							<td>Surname</td>
-							<td>Email</td>
-							<td>Phone</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>{order.customer.name}</td>
-							<td>{order.customer.surname}</td>
-							<td>{order.customer.email}</td>
-							<td>{order.customer.phone}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-
-			<div>
-				<h4>Order</h4>
-				<table>
-					<thead>
-						<tr>
-							<td>Product</td>
-							<td>Size</td>
-							<td>Count</td>
-							<td>Price</td>
-							<td>Download</td>
-						</tr>
-					</thead>
-					<tbody>
-						{#each order.cart.cartItems as item}
-							{JSON.stringify(item.file)}
+					<h4>Client</h4>
+					<table>
+						<thead>
 							<tr>
-								<td>{item.product.title}</td>
-								<td>{item.size.size}</td>
-								<td>{item.quantity.quantity}</td>
-								<td>{item.price.price.toFixed(2)} Eur</td>
-								<td
-									><button on:click={downloadFile(item.file)}>Download</button><a
-										href={item.file}
-										download={item.file}
-									>
-										d</a
-									>
-								</td>
+								<td>Name</td>
+								<td>Surname</td>
+								<td>Email</td>
+								<td>Phone</td>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-			<div>
-				<h4>Shipping</h4>
-				<table>
-					<thead>
-						<tr>
-							<td>Option</td>
-							<td>Address</td>
-							<td>Price</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>{order.shipping}</td>
-							<td>{order.address}</td>
-							<td>{order.shipping === 'omniva' ? 10 : 20}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+						</thead>
+						<tbody>
+							<tr>
+								<td>{order.customer.name}</td>
+								<td>{order.customer.surname}</td>
+								<td>{order.customer.email}</td>
+								<td>{order.customer.phone}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div>
+					<h4>Order</h4>
+					<table>
+						<thead>
+							<tr>
+								<td>Product</td>
+								<td>Size</td>
+								<td>Count</td>
+								<td>Price</td>
+								<td>Download</td>
+							</tr>
+						</thead>
+						<tbody>
+							{#each order.cart.cartItems as item}
+								<tr>
+									<td>{item.product.title}</td>
+									<td>{item.size.size}</td>
+									<td>{item.quantity.quantity}</td>
+									<td>{item.price.price.toFixed(2)} Eur</td>
+									<td>
+										<a
+											href="/files/{item.file.slice(6)}"
+											target="_blank"
+											rel="noreferrer"
+											download={item.file.slice(6)}
+											class="button"
+										>
+											Download</a
+										>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+				<div>
+					<h4>Shipping</h4>
+					<table>
+						<thead>
+							<tr>
+								<td>Option</td>
+								<td>Address</td>
+								<td>Price</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>{order.shipping}</td>
+								<td>{order.address}</td>
+								<td>{order.shipping === 'omniva' ? 10 : 20}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				{#if order.shipped}
+					<label for="code">Tracking code</label>
+					<input type="text" name="code" />
+				{/if}
+
+				<button type="submit">Save</button>
+			</form>
 		</article>
 	</dialog>
 {/if}

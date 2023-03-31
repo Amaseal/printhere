@@ -1,12 +1,12 @@
 <script>
-	export let data;
+	export let products;
 	import { page } from '$app/stores';
 </script>
 
 <section>
 	<div class="container">
-		<div class="flex gap">
-			{#each data.category.products as product}
+		<div class="grid gap">
+			{#each products as product}
 				<article>
 					<a href="{$page.params.slug ?? ''}/{product.slug}" class="flex collumn align">
 						<div class="img-container">
@@ -23,7 +23,6 @@
 <style>
 	article {
 		padding: 0;
-		max-width: 25%;
 		overflow: hidden;
 		background-color: transparent;
 		box-shadow: none;

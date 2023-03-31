@@ -3,46 +3,96 @@
 	import { cart } from '$lib/scripts/cart';
 	import { globals } from '$lib/scripts/globals';
 	import CartComponent from '$lib/components/app/cartcomponent/CartComponent.svelte';
+	import { Hamburger } from 'svelte-hamburgers';
 	import { fade } from 'svelte/transition';
+
+	let open;
+	let width;
 </script>
+
+<svelte:window bind:innerWidth={width} />
 
 <header>
 	<div class="container">
-		<nav class="flex align">
-			<ul>
-				<li>
-					<a href="/">
-						<picture>
-							<source
-								class="logo"
-								srcset="../logo-light.svg"
-								alt="logo"
-								media="(prefers-color-scheme: dark)"
-							/>
-							<img class="logo" src="../logo.svg" alt="logo" />
-						</picture>
-					</a>
+		{#if width > 600}
+			<nav class="flex align">
+				<ul>
+					<li>
+						<a href="/">
+							<picture>
+								<source
+									class="logo"
+									srcset="../logo-light.svg"
+									alt="logo"
+									media="(prefers-color-scheme: dark)"
+								/>
+								<img class="logo" src="../logo.svg" alt="logo" />
+							</picture>
+						</a>
+					</li>
+				</ul>
+				<ul class="main">
+					<li><a href="/products">Products</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+				<li class="flex align justify">
+					<a href="?open" role="button" class="flex cart" on:click={() => ($globals.cart = true)}
+						><Cart size="20px" /></a
+					>
+					{#if $cart.items.length > 0}
+						<div transition:fade class="chip center">
+							<p>{$cart.items.length}</p>
+						</div>
+					{/if}
 				</li>
-			</ul>
-			<ul class="main">
-				<li><a href="/products">Products</a></li>
-				<li><a href="/about">About</a></li>
-			</ul>
-			<li class="flex align justify">
-				<a href="?open" role="button" class="flex cart" on:click={() => ($globals.cart = true)}
-					><Cart size="20px" /></a
-				>
-				{#if $cart.items.length > 0}
-					<div transition:fade class="chip center">
-						<p>{$cart.items.length}</p>
-					</div>
-				{/if}
-			</li>
 
-			{#if $globals.cart === true}
-				<CartComponent />
-			{/if}
-		</nav>
+				{#if $globals.cart === true}
+					<CartComponent />
+				{/if}
+			</nav>
+		{:else}
+			<nav class="flex align">
+				<ul>
+					<li>
+						<a href="/">
+							<picture>
+								<source
+									class="logo"
+									srcset="../logo-light.svg"
+									alt="logo"
+									media="(prefers-color-scheme: dark)"
+								/>
+								<img class="logo" src="../logo.svg" alt="logo" />
+							</picture>
+						</a>
+					</li>
+				</ul>
+
+				<li class="flex align justify">
+					<a href="?open" role="button" class="flex cart" on:click={() => ($globals.cart = true)}
+						><Cart size="20px" /></a
+					>
+					{#if $cart.items.length > 0}
+						<div transition:fade class="chip center">
+							<p>{$cart.items.length}</p>
+						</div>
+					{/if}
+				</li>
+				{#if $globals.cart === true}
+					<CartComponent />
+				{/if}
+				<div class="burger">
+					<Hamburger bind:open />
+				</div>
+
+				{#if open}
+					<ul class="mobile">
+						<li><a href="/products">Products</a></li>
+						<li><a href="/about">About</a></li>
+					</ul>
+				{/if}
+			</nav>
+		{/if}
 	</div>
 </header>
 
@@ -69,6 +119,22 @@
 		margin-right: auto;
 		margin-left: auto;
 		transform: translateX(-50px);
+	}
+	.burger {
+		position: relative;
+		z-index: 1000;
+	}
+	.mobile {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: start;
+		padding: 20px;
+		width: 100%;
+		height: 100vh;
+		background-color: var(--background-color);
 	}
 	a {
 		font-weight: 500;
@@ -98,5 +164,13 @@
 	}
 	.cart:hover {
 		color: var(--primary);
+	}
+	@media only screen and (max-width: 600px) {
+		.flex {
+			justify-content: initial;
+		}
+		ul:first-of-type {
+			margin-right: auto;
+		}
 	}
 </style>
