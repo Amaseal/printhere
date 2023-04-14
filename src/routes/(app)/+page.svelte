@@ -8,6 +8,10 @@
 
 <svelte:head>
 	<title>PrintHere - Online printing service</title>
+	<meta
+		name="description"
+		content="Print here is an online printing platform that allows for easy and quick print production ordering"
+	/>
 </svelte:head>
 
 <Hero />

@@ -3,6 +3,7 @@ import { db } from "$lib/scripts/db";
 import * as fs from "fs";
 import { SECRET_MAIL_USER } from "$env/static/private";
 import { SECRET_MAIL_PASS } from "$env/static/private";
+import easyinvoice from "easyinvoice";
 import { UPLOAD_PATH } from "$env/static/private";
 
 import { redirect } from "@sveltejs/kit";
@@ -12,42 +13,26 @@ import Order from "$lib/components/app/emails/Order.svelte";
 import nodemailer from "nodemailer";
 
 export async function POST({ request }) {
-  const data = await request.formData();
-  const cart = await data.get("cart");
-  const name = await data.get("name");
-  const surname = await data.get("surname");
-  const phone = await data.get("phone");
-  const email = await data.get("email");
-  const shippingOption = await data.get("shipping");
-  const address = await data.get("address");
-  const terms = await data.get("terms");
-  const discount = await data.get("discount");
-  const shippingCost = await data.get("shippingCost");
+  const data = Object.fromEntries(await request.formData());
 
-  if (terms !== "on") {
+  console.log(data);
+  if (data.terms !== "on") {
     return json({ terms: false });
   }
 
   function parseAddress(address) {
-    let string;
-    if (typeof address === "string") {
-      try {
-        const obj = JSON.parse(address);
-        string = obj.value;
-      } catch (error) {
-        string = address;
-      }
+    try {
+      const obj = JSON.parse(address);
+      return obj.value;
+    } catch (error) {
+      return address;
     }
-
-    if (!string) {
-      string = address;
-    }
-
-    return string;
   }
 
-  let parsedAddress = parseAddress(address);
-  let parsedCart = JSON.parse(cart);
+  let parsedAddress = parseAddress(data.address);
+  let parsedCart = JSON.parse(data.cart);
+
+  console.log(parsedAddress);
 
   parsedCart.items.forEach((item, index) => {
     fs.rename(
@@ -73,10 +58,21 @@ export async function POST({ request }) {
     },
   });
 
-  let total =
+  let total = 0
+
+  if (data.entity === "private") {
+    total =
     prices.reduce((prev, cur) => {
       return prev + cur.price;
-    }, 0) * (discount > 0 ? (100 - discount) / 100 : 1);
+    }, 0) * (data.discount > 0 ? (100 - data.discount) / 100 : 1);
+  } else{
+    total =
+    prices.reduce((prev, cur) => {
+      return prev + cur.price;
+    }, 0) * (data.discount > 0 ? (100 - data.discount) / 100 : 1);
+  }
+
+
 
   const cartObjects = parsedCart.items.map((item, index) => ({
     product: {
@@ -108,9 +104,9 @@ export async function POST({ request }) {
 
   const order = await db.order.create({
     data: {
-      shipping: shippingOption,
+      shipping: data.shippingOption,
       address: parsedAddress,
-      total: total + Number(shippingCost),
+      total: total + Number(data.shippingCost),
     },
   });
 
@@ -125,13 +121,52 @@ export async function POST({ request }) {
     },
   });
 
+  let customerData = {};
+
+  if (data.entity === "private") {
+    customerData = {
+      data: {
+        order: {
+          connect: { id: order.id },
+        },
+        entityType: "PRIVATE",
+        privateEntity: {
+          create: {
+            name: data.name,
+            surname: data.surname,
+            email: email,
+            phone: phone,
+          },
+        },
+      },
+    };
+  } else {
+    customerData = {
+      data: {
+        order: {
+          connect: { id: order.id },
+        },
+        entityType: "LEGAL",
+        legalEntity: {
+          create: {
+            company_name: data.company,
+            registry_num: data.reg_nr,
+            vat_num: data.vat_nr,
+            email: data.email,
+            phone: data.phone,
+          },
+        },
+      },
+    };
+  }
+
   const customer = await db.customer.create({
     data: {
       order: {
         connect: { id: order.id },
       },
-      name: name,
-      surname: surname,
+      name: data.name,
+      surname: data.surname,
       email: email,
       phone: phone,
     },
@@ -139,6 +174,7 @@ export async function POST({ request }) {
 
   const now = new Date();
   const year = now.getFullYear();
+  const day = now.getDate();
   const month = (now.getMonth() + 1).toString().padStart(2, "0"); // add leading zero if needed
   const monthYearString = `${year}-${month}`;
 
@@ -153,6 +189,78 @@ export async function POST({ request }) {
       month: monthYearString,
       count: 1,
     },
+  });
+
+  console.log(parsedCart);
+
+  let invoiceProducts = parsedCart.items.map((item) => {
+    return {
+      quantity: 1,
+      description: `${item.product.title} - ${item.size.size} - ${item.quantity.quantity}`,
+      "tax-rate": 0,
+      price: item.price.price * (discount > 0 ? (100 - discount) / 100 : 1),
+    };
+  });
+
+  invoiceProducts.push({
+    quantity: 1,
+    description: "shipping",
+    "tax-rate": 0,
+    price: Number(shippingCost),
+  });
+
+  console.log(invoiceProducts);
+
+  const invoice = {
+    data: {
+      images: {
+        logo: "https://iili.io/HORsAue.png",
+      },
+
+      sender: {
+        company: "Sia AttaPrint",
+        address: "Berzu street 4-57",
+        zip: "LV-5101",
+        city: "Aizkraukle",
+        country: "Latvia",
+      },
+      client: {
+        company: customer.name + " " + customer.surname,
+        address: parsedAddress,
+        email: customer.email,
+        phone: customer.phone,
+      },
+      information: {
+        number: `${year}-${order.id}`,
+        date: `${day}-${month}-${year}`,
+        "due-date": `${day}-${month}-${year}`,
+      },
+      products: invoiceProducts,
+      "bottom-notice": "Thank you for choosing us!",
+      settings: {
+        currency: "EUR",
+        "tax-notation": "VAT",
+        "margin-top": 25,
+        "margin-right": 25,
+        "margin-left": 25,
+        "margin-bottom": 25,
+      },
+    },
+  };
+
+  await easyinvoice.createInvoice(invoice.data, function (result) {
+    // The response will contain a base64 encoded PDF file
+
+    // Please review the documentation below on how to do this
+    fs.writeFile(
+      `invoices/${month}-${year}-${order.id + ".pdf"}`,
+      Buffer.from(result.pdf, "base64"),
+      (err) => {
+        if (err) {
+          console.log(err);
+        }
+      }
+    );
   });
 
   const transporter = nodemailer.createTransport({
@@ -174,7 +282,9 @@ export async function POST({ request }) {
     props: {
       products: parsedCart.items,
       client: customer,
-      total: total + Number(shippingCost),
+      total:
+        total * (discount > 0 ? (100 - discount) / 100 : 1) +
+        Number(shippingCost),
       shipping: shippingOption,
       address: parsedAddress,
     },
@@ -185,6 +295,13 @@ export async function POST({ request }) {
     to: email,
     subject: "Order Confirmation",
     html: clientHtml,
+    attachments: [
+      {
+        filename: `${year}-${order.id + ".pdf"}`,
+        path: `invoices/${year}-${order.id + ".pdf"}`,
+        contentType: "application/pdf",
+      },
+    ],
   };
 
   const adminOptions = {

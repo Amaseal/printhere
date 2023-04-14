@@ -32,19 +32,25 @@
 					</li>
 				</ul>
 				<ul class="main">
-					<li><a href="/products">Products</a></li>
+					<li><a href="/products">All products</a></li>
 					<li><a href="/about">About</a></li>
 				</ul>
-				<li class="flex align justify">
-					<a href="?open" role="button" class="flex cart" on:click={() => ($globals.cart = true)}
-						><Cart size="20px" /></a
-					>
-					{#if $cart.items.length > 0}
-						<div transition:fade class="chip center">
-							<p>{$cart.items.length}</p>
-						</div>
-					{/if}
-				</li>
+				<ul>
+					<li class="flex align justify">
+						<a
+							href="?open"
+							role="button"
+							aria-label="cart"
+							class="flex cart"
+							on:click={() => ($globals.cart = true)}><Cart size="20px" /></a
+						>
+						{#if $cart.items.length > 0}
+							<div transition:fade class="chip center">
+								<p>{$cart.items.length}</p>
+							</div>
+						{/if}
+					</li>
+				</ul>
 
 				{#if $globals.cart === true}
 					<CartComponent />

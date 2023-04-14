@@ -117,6 +117,10 @@ img{
   width: 100%;
 }
 
+.flex.wrap{
+  flex-wrap: wrap;
+}
+
 .toast-err{
   padding: var(--spacing);
   background-color: var(--color-del);
@@ -184,4 +188,9 @@ justify-content: center;
 
 .value-container {
   padding: 0 !important;
+}
+
+
+.svelte-select{
+  margin : 0;
 }

@@ -9,6 +9,7 @@ export async function load({ params }) {
       products: true,
     },
   });
+
   if (category) {
     return { category };
   } else {

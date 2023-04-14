@@ -1,7 +1,16 @@
+<svelte:head>
+	<title>File requirements</title>
+	<meta
+		name="description"
+		content="everything about preperaing files and recomendations for printhere.eu's online printing service"
+	/>
+</svelte:head>
+
 <section>
 	<div class="container">
 		<a href="/about">Back</a>
 		<h1>Preparing files for printing</h1>
+		<p>These are our guidelines, but every file will be looked at and prepered by our designers.</p>
 
 		<div class="flex">
 			<div class="margin">

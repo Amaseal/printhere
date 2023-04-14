@@ -5,7 +5,7 @@
 <section>
 	<div class="form">
 		<div class="grid align">
-			<img src="../images/form.jpg" alt="" />
+			<img src="../form.webp" alt="" />
 			<form action="?/register" method="POST">
 				<h4>Register</h4>
 				<label for="email">

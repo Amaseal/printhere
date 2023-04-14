@@ -1,3 +1,8 @@
+<svelte:head>
+	<title>Data policies</title>
+	<meta name="description" content="Printhere.eu's data policies" />
+</svelte:head>
+
 <section>
 	<div class="container">
 		<h1>Data protection</h1>

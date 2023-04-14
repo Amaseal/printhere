@@ -1,11 +1,12 @@
 <head>
 	<title>About Us</title>
+	<meta name="description" content="Here's everything you need to know about printhere.eu" />
 </head>
 
 <section>
 	<div class="container">
 		<div class="header grid align">
-			<img src="../about.png" alt="" />
+			<img src="../about.webp" alt="" />
 			<div>
 				<h1>About</h1>
 				<p>

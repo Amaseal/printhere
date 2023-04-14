@@ -5,7 +5,7 @@
 <section>
 	<div class="form">
 		<div class="grid align">
-			<img src="../images/form.png" alt="" />
+			<img src="../form.webp" alt="" />
 			<form action="?/login" method="POST">
 				<h4>Login</h4>
 				<label for="email">

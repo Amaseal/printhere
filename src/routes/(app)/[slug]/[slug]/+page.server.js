@@ -15,6 +15,9 @@ export async function load({ params }) {
     },
   });
 
+  product.sizes.sort((a, b) => a.price - b.price);
+  product.quantities.sort((a, b) => a.quantity - b.quantity);
+
   if (product) {
     return { product };
   }

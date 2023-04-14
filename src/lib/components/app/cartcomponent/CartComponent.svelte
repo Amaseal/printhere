@@ -37,11 +37,16 @@
 						<a href="#delete" role="button" class="delete" on:click={() => removeProduct(index)}
 							><Close /></a
 						>
-						<h5 class="price">{Number(item.price.price).toFixed(2)}</h5>
+						<h5 class="price">{Number(item.price.price).toFixed(2)} €</h5>
 					</div>
 				</div>
 			{/each}
-			<h5>Total: {total.toFixed(2)}</h5>
+
+			<hgroup class="flex gap align-b">
+				<h5>Total: {total.toFixed(2)} €</h5>
+				<small>{Number(total.toFixed(2)) - Number(total.toFixed(2)) * 0.21}€ + VAT</small>
+			</hgroup>
+
 			<a href="/checkout" on:click={() => ($globals.cart = false)} role="button" class="checkout"
 				>Checkout</a
 			>
@@ -52,6 +57,9 @@
 </section>
 
 <style>
+	hgroup {
+		margin-top: auto;
+	}
 	h4 {
 		border-bottom: 1px solid var(--color);
 		padding-bottom: 30px;

@@ -15,6 +15,9 @@ export async function load() {
     where: {
       month: { in: pastMonths },
     },
+    orderBy: {
+      month: "desc",
+    },
   });
 
   console.log(orderCount);

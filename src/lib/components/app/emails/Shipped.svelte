@@ -72,7 +72,7 @@
 	<Section style={main}>
 		<Container style={container}>
 			<Img
-				src="https://www.printhere.lv/logo.svg"
+				src="https://www.printhere.eu/logo.png"
 				alt="PrintHere Logo"
 				style={logo}
 				width="200"

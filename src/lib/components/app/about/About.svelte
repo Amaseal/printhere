@@ -6,7 +6,7 @@
 				<li class="item">Upload your artwork</li>
 				<li class="item">Order</li>
 			</ol>
-			<img src="../about.png" alt="about" />
+			<img src="../about.webp" alt="about" />
 		</div>
 	</div>
 	<div class="overflow">

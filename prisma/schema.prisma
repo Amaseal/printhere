@@ -72,15 +72,15 @@ model Price {
 }
 
 model Order {
-  id       Int       @id @default(autoincrement())
-  cart     Cart?
-  customer Customer?
-  shipping String
-  address  String
-  ordered_at DateTime @default(now())
-  shipped  Boolean   @default(false)
-  done     Boolean   @default(false)
-  total    Float
+  id         Int       @id @default(autoincrement())
+  cart       Cart?
+  customer   Customer?
+  shipping   String
+  address    String
+  ordered_at DateTime  @default(now())
+  shipped    Boolean   @default(false)
+  done       Boolean   @default(false)
+  total      Float
 }
 
 model Cart {
@@ -90,14 +90,42 @@ model Cart {
   cartItems cartItem[]
 }
 
+enum EntityType {
+  PRIVATE
+  LEGAL
+}
+
 model Customer {
-  id      Int    @id @default(autoincrement())
-  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int    @unique
-  name    String
-  surname String
-  email   String
-  phone   String
+  id            Int            @id @default(autoincrement())
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId       Int            @unique
+  entity_type   EntityType
+  privateEntity PrivateEntity? @relation(fields: [privateEntityId], references: [id])
+  legalEntity   LegalEntity?   @relation(fields: [legalEntityId], references: [id])
+
+  privateEntityId Int?
+  legalEntityId   Int?
+}
+
+model PrivateEntity {
+  id          Int        @id @default(autoincrement())
+  name        String
+  surname     String
+  email       String
+  phone       String
+  entity_type EntityType
+  Customer    Customer[]
+}
+
+model LegalEntity {
+  id           Int        @id @default(autoincrement())
+  company_name String
+  registry_num String
+  vat_num String
+  email        String
+  phone String
+  entity_type  EntityType
+  Customer     Customer[]
 }
 
 model cartItem {
@@ -111,18 +139,18 @@ model cartItem {
   price      Price    @relation(fields: [priceId], references: [id])
   priceId    Int
   file       String
-  Cart       Cart?    @relation(fields: [cartId], references: [id])
+  Cart       Cart?    @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId     Int?
 }
 
 model Promo {
-  id Int @id @default(autoincrement())
-  code String @unique
+  id     Int    @id @default(autoincrement())
+  code   String @unique
   amount Int
 }
 
 model OrderCount {
-  id Int @id @default(autoincrement())
+  id    Int    @id @default(autoincrement())
   count Int
   month String @unique
 }

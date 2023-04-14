@@ -1,6 +1,7 @@
 <script>
 	export let products;
-	import { page } from '$app/stores';
+	export let category;
+	console.log(category);
 </script>
 
 <section>
@@ -8,7 +9,7 @@
 		<div class="grid gap">
 			{#each products as product}
 				<article>
-					<a href="{$page.params.slug ?? ''}/{product.slug}" class="flex collumn align">
+					<a href="{category.slug}/{product.slug}" class="flex collumn align">
 						<div class="img-container">
 							<img src={product.imgUrl} alt="" />
 						</div>

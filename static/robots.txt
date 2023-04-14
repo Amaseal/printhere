@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /temp/
+Disallow: /files/
+Disallow: /invoices/
+Disallow: /checkout/
+Disallow: /thank-you/

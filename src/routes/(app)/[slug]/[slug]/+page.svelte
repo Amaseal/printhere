@@ -95,7 +95,7 @@
 
 				<p><b>Select desired size:</b></p>
 
-				<div class="flex gap inputs">
+				<div class="flex gap inputs wrap">
 					{#each data.product.sizes as size}
 						<div class="radio">
 							<input
@@ -112,7 +112,7 @@
 
 				<p><b>Select prefered quantity:</b></p>
 
-				<div class="flex gap inputs">
+				<div class="flex gap inputs wrap">
 					{#each data.product.quantities as quantity}
 						<div class="radio">
 							<input
@@ -135,7 +135,11 @@
 					accept="application/pdf, image/*"
 					on:change={handleUpload}
 				/>
-				<h4>Total: {Number(selectedPrice.price).toFixed(2)}</h4>
+
+				<hgroup class="flex gap align-b">
+					<h4>Total: {Number(selectedPrice.price).toFixed(2)} €</h4>
+					<small>{Number(selectedPrice.price) - Number(selectedPrice.price) * 0.21}€ + VAT</small>
+				</hgroup>
 
 				<button disabled={!selectedFile || error} class="small flex gap align" on:click={addToCart}
 					>Add to cart <Cart /></button

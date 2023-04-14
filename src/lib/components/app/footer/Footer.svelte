@@ -10,35 +10,37 @@
 				/>
 				<img class="logo" src="../logo.svg" alt="logo" />
 			</picture>
-			<h6>Lāčplēša street 9, Aizkraukle, Latvia, LV-5101</h6>
-			<h6>+371 25 776 699</h6>
-			<h6>info@printhere.eu</h6>
+			<p>Lāčplēša street 9, Aizkraukle, Latvia, LV-5101</p>
+			<p>+371 25 776 699</p>
+			<p>info@printhere.eu</p>
 		</div>
 
 		<form action="">
+			<h5>Contact us:</h5>
 			<div class="flex gap">
 				<div>
 					<label for="name">Name</label>
-					<input type="text" name="name" />
+					<input type="text" name="name" id="name" />
 				</div>
 				<div>
 					<label for="email">Email</label>
-					<input type="email" />
+					<input type="email" name="email" id="email" />
 				</div>
 			</div>
 
 			<label for="message"> Message</label>
-			<textarea name="message" id="" cols="30" rows="3" />
+			<textarea name="message" id="message" cols="30" rows="2" />
+			<button type="submit">Send</button>
 		</form>
 	</div>
 </footer>
 
 <style>
+	button {
+		color: #202022;
+	}
 	picture {
 		padding-bottom: 50px;
-	}
-	h6 {
-		margin-bottom: 10px;
 	}
 	footer {
 		background-color: var(--background-color-accent);

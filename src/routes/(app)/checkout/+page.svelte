@@ -9,12 +9,18 @@
 	import { PUBLIC_STRIPE_KEY } from '$env/static/public';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { Elements, PaymentElement } from 'svelte-stripe';
+	import toast from 'svelte-french-toast';
 
 	let stripe = null;
+
+	let paymentIntent;
 
 	let processing = false;
 	let elements;
 	let selectedShipping = 'omniva';
+	let selectedEntity = 'private';
+	let vatNr;
+	let country;
 
 	let discount = 0;
 
@@ -28,7 +34,7 @@
 		};
 	});
 
-	let theme = 'flat';
+	let theme;
 	let data = null;
 
 	const getClientSecret = async () => {
@@ -40,13 +46,15 @@
 			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost })
 		});
 		data = await res.json();
+		paymentIntent = data.paymentIntent;
 	};
 
 	onMount(async () => {
-		if (window.matchMedia('(prefers-color-cheme: dark)').matches) {
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			theme = 'night';
+		} else {
+			theme = 'flat';
 		}
-
 		stripe = await loadStripe(PUBLIC_STRIPE_KEY);
 		if ($cart.items.length > 0) {
 			getClientSecret();
@@ -85,8 +93,28 @@
 			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost, formProps })
 		});
 		data = await res.json();
-		console.log(data);
+
 		discount = data.promo;
+	};
+
+	const handleVat = async () => {
+		const res = await fetch('/api/vat', {
+			method: 'post',
+			headers: {
+				'content-type': 'aplication/json'
+			},
+			body: JSON.stringify({ vatNr, country })
+		});
+		data = await res.json();
+		if (data === 'valid') {
+			toast.success('vat number validated', {
+				position: 'bottom-center'
+			});
+		} else {
+			toast.error('vat number invalid, please try again', {
+				position: 'bottom-center'
+			});
+		}
 	};
 
 	async function pay(e) {
@@ -129,6 +157,7 @@
 
 <svelte:head>
 	<title>Checkout</title>
+	<meta name="description" content="User checkout" />
 </svelte:head>
 
 <section>
@@ -136,29 +165,103 @@
 		{#if $cart.items.length > 0}
 			<div class="flex justify">
 				<form on:submit|preventDefault={pay} method="POST">
-					<h5>Client info</h5>
-					<div class="info">
-						<div class="flex gap">
-							<div class="col">
-								<label for="name">Name</label>
-								<input type="text" name="name" required placeholder="John" />
-							</div>
-							<div class="col">
-								<label for="surname">Surname</label>
-								<input type="text" name="surname" required placeholder="Doe" />
-							</div>
+					<div class="flex gap align">
+						<div class="radio">
+							<input
+								bind:group={selectedEntity}
+								type="radio"
+								name="entity"
+								id="private"
+								value="private"
+							/>
+							<label for="private">
+								<div class="flex align gap">Private entity</div>
+							</label>
 						</div>
-						<div class="flex gap">
-							<div class="col">
-								<label for="phone">Phone</label>
-								<input type="tel" name="phone" required placeholder="phone" />
-							</div>
-							<div class="col">
-								<label for="email">E-mail</label>
-								<input type="email" name="email" required placeholder="john.doe@email.com" />
-							</div>
+						<div class="radio">
+							<input
+								bind:group={selectedEntity}
+								type="radio"
+								name="entity"
+								id="legal"
+								value="legal"
+							/>
+							<label for="legal"> <div class="flex align gap">Legal Entity</div></label>
 						</div>
 					</div>
+					<h5>Client info</h5>
+
+					{#if selectedEntity === 'private'}
+						<div class="info">
+							<div class="flex gap">
+								<div class="col">
+									<label for="name">Name</label>
+									<input type="text" name="name" required placeholder="John" />
+								</div>
+								<div class="col">
+									<label for="surname">Surname</label>
+									<input type="text" name="surname" required placeholder="Doe" />
+								</div>
+							</div>
+							<div class="flex gap">
+								<div class="col">
+									<label for="phone">Phone</label>
+									<input type="tel" name="phone" required placeholder="phone" />
+								</div>
+								<div class="col">
+									<label for="email">E-mail</label>
+									<input type="email" name="email" required placeholder="john.doe@email.com" />
+								</div>
+							</div>
+						</div>
+					{:else}
+						<div class="info">
+							<div class="flex gap">
+								<div class="col">
+									<label for="company">Company name</label>
+									<input type="text" name="company" required placeholder="Cool company" />
+								</div>
+								<div class="col">
+									<label for="surname">Country</label>
+									<select bind:value={country} name="regNr" required placeholder="Doe">
+										<option value="LV">Latvia</option>
+										<option value="EE">Estonia</option>
+										<option value="LT">Lithuania</option>
+										<option value="PL">Poland</option>
+										<option value="DE">Germany</option>
+									</select>
+								</div>
+							</div>
+							<div class="flex gap">
+								<div class="col">
+									<label for="vat_nr">Vat Nr.</label>
+									<input
+										bind:value={vatNr}
+										type="text"
+										name="vat-nr"
+										required
+										on:change={() => handleVat()}
+										placeholder="Cool company"
+									/>
+								</div>
+								<div class="col">
+									<label for="reg_nr">Reg. Nr.</label>
+									<input type="text" name="reg_nr" required placeholder="Doe" />
+								</div>
+							</div>
+							<div class="flex gap">
+								<div class="col">
+									<label for="phone">Phone</label>
+									<input type="tel" name="phone" required placeholder="phone" />
+								</div>
+								<div class="col">
+									<label for="email">E-mail</label>
+									<input type="email" name="email" required placeholder="john.doe@email.com" />
+								</div>
+							</div>
+						</div>
+					{/if}
+
 					<br />
 					<h5>Shipping</h5>
 					<div class="info">
@@ -217,7 +320,7 @@
 							/>
 						{:else if selectedShipping === 'post'}
 							<label for="post">Enter shipping address</label>
-							<input type="text" name="shipping" />
+							<input type="text" name="address" />
 						{/if}
 					</div>
 					<br />
@@ -244,7 +347,7 @@
 					<div class="info">
 						<label for="payment" />
 						{#if stripe && data}
-							<Elements {stripe} clientSecret={data.clientSecret} bind:elements {theme}>
+							<Elements {stripe} clientSecret={paymentIntent.clientSecret} bind:elements {theme}>
 								<PaymentElement --fontSizeSm="var(--font-size)" />
 							</Elements>
 						{:else}
@@ -290,7 +393,15 @@
 								</div>
 							{/each}
 							<h5>Shipping: {shippingCost.toFixed(2)}</h5>
-							<h5>Total: {total.toFixed(2)}</h5>
+
+							{#if selectedEntity === 'private'}
+								<hgroup class="flex gap align-b">
+									<h5>Total: {total.toFixed(2)} €</h5>
+									<small>{Number(total.toFixed(2)) - Number(total.toFixed(2)) * 0.21}€ + VAT</small>
+								</hgroup>
+							{:else}
+								<h5>Total: {total.toFixed(2) - total.toFixed(2) * 0.21} €</h5>
+							{/if}
 						</div>
 					{:else}
 						<h5>Cart is empty</h5>
@@ -384,6 +495,10 @@
 
 	h5 {
 		margin-bottom: 10px;
+	}
+
+	hgroup > * {
+		margin: 0;
 	}
 
 	label > .flex > img {

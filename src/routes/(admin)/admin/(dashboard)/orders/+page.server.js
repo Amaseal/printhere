@@ -2,6 +2,7 @@ import { db } from "$lib/scripts/db";
 import { SECRET_MAIL_USER } from "$env/static/private";
 import { SECRET_MAIL_PASS } from "$env/static/private";
 
+import * as fs from "fs";
 import { render } from "svelte-email";
 
 import Shipped from "$lib/components/app/emails/Shipped.svelte";
@@ -55,6 +56,18 @@ const remove = async ({ request }) => {
         console.log(err);
       }
     });
+  });
+
+  const cartItems = order.cart.cartItems.map((obj) => obj.id);
+
+  console.log(cartItems);
+
+  await db.cartItem.deleteMany({
+    where: {
+      id: {
+        in: cartItems,
+      },
+    },
   });
 
   await db.order.delete({
