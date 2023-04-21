@@ -13,19 +13,40 @@
 
 	let stripe = null;
 
-	let paymentIntent;
-
 	let processing = false;
 	let elements;
 	let selectedShipping = 'omniva';
-	let selectedEntity = 'private';
-	let vatNr;
-	let country;
 
-	let discount = 0;
-
+	let data = {
+		stripe: {
+			clientSecret: '',
+			id: ''
+		},
+		cart: $cart,
+		client: {
+			country: 'LV',
+			type: 'private',
+			vat: {
+				nr: '',
+				valid: false
+			}
+		},
+		shipping: {
+			cost: 5,
+			type: 'omniva'
+		},
+		promo: {
+			code: null,
+			discount: 0,
+			valid: false
+		},
+		total: {
+			without_tax: '',
+			with_tax: ''
+		},
+		error: null
+	};
 	let agreed = false;
-	let error = false;
 
 	let items = locations.map((val) => {
 		return {
@@ -35,7 +56,6 @@
 	});
 
 	let theme;
-	let data = null;
 
 	const getClientSecret = async () => {
 		const res = await fetch('/api/stripe', {
@@ -43,10 +63,10 @@
 			headers: {
 				'content-type': 'aplication/json'
 			},
-			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost })
+			body: JSON.stringify(data)
 		});
 		data = await res.json();
-		paymentIntent = data.paymentIntent;
+		console.log(data);
 	};
 
 	onMount(async () => {
@@ -61,40 +81,25 @@
 		}
 	});
 
-	const updateClientSecret = async () => {
-		const res = await fetch('/api/stripe', {
-			method: 'put',
+	const updatePrice = async () => {
+		console.log();
+		const res = await fetch('/api/updatePrice', {
+			method: 'post',
 			headers: {
 				'content-type': 'aplication/json'
 			},
-			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost, discount })
-		});
-		// data = await res.json();
-	};
-
-	$: shippingCost = selectedShipping === 'omniva' ? 5 : 10;
-
-	$: total =
-		$cart.items.reduce((prev, cur) => {
-			return prev + Number(cur.price.price);
-		}, 0) *
-			(discount > 0 ? (100 - discount) / 100 : 1) +
-		shippingCost;
-
-	const getPromo = async (e) => {
-		const formData = new FormData(e.target);
-		const formProps = Object.fromEntries(formData);
-
-		const res = await fetch('/api/promo', {
-			method: 'put',
-			headers: {
-				'content-type': 'aplication/json'
-			},
-			body: JSON.stringify({ $cart, paymentIntent: data, shippingCost, formProps })
+			body: JSON.stringify(data)
 		});
 		data = await res.json();
 
-		discount = data.promo;
+		console.log(data);
+
+		if (data.error) {
+			toast.error(data.error, {
+				position: 'bottom-center',
+				duration: 1000
+			});
+		}
 	};
 
 	const handleVat = async () => {
@@ -103,16 +108,20 @@
 			headers: {
 				'content-type': 'aplication/json'
 			},
-			body: JSON.stringify({ vatNr, country })
+			body: JSON.stringify(data)
 		});
+
 		data = await res.json();
-		if (data === 'valid') {
-			toast.success('vat number validated', {
-				position: 'bottom-center'
+
+		if (data.client.vat.valid === true) {
+			toast.success('VAT number validated', {
+				position: 'bottom-center',
+				duration: 1000
 			});
 		} else {
-			toast.error('vat number invalid, please try again', {
-				position: 'bottom-center'
+			toast.error(data.error, {
+				position: 'bottom-center',
+				duration: 1000
 			});
 		}
 	};
@@ -136,9 +145,7 @@
 			const form = e.target;
 			const data = new FormData(form);
 
-			data.append('cart', JSON.stringify($cart));
-			data.append('shippingCost', shippingCost);
-			data.append('discount', discount);
+			data.append('userdata', data);
 
 			const response = await fetch('/api/saveOrder', {
 				method: 'POST',
@@ -168,7 +175,7 @@
 					<div class="flex gap align">
 						<div class="radio">
 							<input
-								bind:group={selectedEntity}
+								bind:group={data.client.type}
 								type="radio"
 								name="entity"
 								id="private"
@@ -180,7 +187,7 @@
 						</div>
 						<div class="radio">
 							<input
-								bind:group={selectedEntity}
+								bind:group={data.client.type}
 								type="radio"
 								name="entity"
 								id="legal"
@@ -191,7 +198,7 @@
 					</div>
 					<h5>Client info</h5>
 
-					{#if selectedEntity === 'private'}
+					{#if data.client.type === 'private'}
 						<div class="info">
 							<div class="flex gap">
 								<div class="col">
@@ -223,7 +230,7 @@
 								</div>
 								<div class="col">
 									<label for="surname">Country</label>
-									<select bind:value={country} name="regNr" required placeholder="Doe">
+									<select bind:value={data.client.country} name="regNr" required placeholder="Doe">
 										<option value="LV">Latvia</option>
 										<option value="EE">Estonia</option>
 										<option value="LT">Lithuania</option>
@@ -236,7 +243,7 @@
 								<div class="col">
 									<label for="vat_nr">Vat Nr.</label>
 									<input
-										bind:value={vatNr}
+										bind:value={data.client.vat.nr}
 										type="text"
 										name="vat-nr"
 										required
@@ -269,12 +276,12 @@
 						<div class="flex gap align">
 							<div class="radio">
 								<input
-									bind:group={selectedShipping}
+									bind:group={data.shipping.type}
 									type="radio"
 									name="shipping"
 									id="omniva"
 									value="omniva"
-									on:change={() => updateClientSecret()}
+									on:change={() => updatePrice()}
 								/>
 								<label for="omniva">
 									<div class="flex align gap">
@@ -285,12 +292,12 @@
 							</div>
 							<div class="radio">
 								<input
-									bind:group={selectedShipping}
+									bind:group={data.shipping.type}
 									type="radio"
 									name="shipping"
 									id="post"
 									value="post"
-									on:change={() => updateClientSecret()}
+									on:change={() => updatePrice()}
 								/>
 								<label for="post">
 									<div class="flex align gap">
@@ -300,7 +307,7 @@
 								>
 							</div>
 						</div>
-						{#if selectedShipping === 'omniva'}
+						{#if data.shipping.type === 'omniva'}
 							<label for="omniva"> Select parlcel machine:</label>
 							<Select
 								name="address"
@@ -318,7 +325,7 @@
 								{items}
 								class="select"
 							/>
-						{:else if selectedShipping === 'post'}
+						{:else if data.shipping.type === 'post'}
 							<label for="post">Enter shipping address</label>
 							<input type="text" name="address" />
 						{/if}
@@ -326,15 +333,15 @@
 					<br />
 					<h5>Promo Code</h5>
 					<div class="info">
-						<form class="promocode" on:submit|preventDefault={getPromo}>
+						<form class="promocode" on:submit|preventDefault={() => updatePrice()}>
 							<div class="flex align start gap promoitems">
 								<label for="promo">Code:</label>
-								<input type="text" name="promo" />
+								<input type="text" name="promo" bind:value={data.promo.code} />
 
 								<button type="submit">Submit</button>
-								{#key discount}
-									{#if discount > 0}
-										<p>Discount: {discount} %</p>
+								{#key data.promo.discount}
+									{#if data.promo.discount > 0}
+										<p>Discount: {data.promo.discount} %</p>
 									{:else if data?.error}
 										<p class="error">{data.error}</p>
 									{/if}
@@ -346,8 +353,8 @@
 					<h5>Payment info:</h5>
 					<div class="info">
 						<label for="payment" />
-						{#if stripe && data}
-							<Elements {stripe} clientSecret={paymentIntent.clientSecret} bind:elements {theme}>
+						{#if stripe && data.stripe.clientSecret}
+							<Elements {stripe} clientSecret={data.stripe.clientSecret} bind:elements {theme}>
 								<PaymentElement --fontSizeSm="var(--font-size)" />
 							</Elements>
 						{:else}
@@ -366,7 +373,7 @@
 									<SyncLoader size="24" color="#00E269" unit="px" duration="1s" />
 								</div>
 							{:else}
-								<button disabled={!agreed || error || processing}> Pay </button>
+								<button disabled={!agreed || data.error || processing}> Pay </button>
 							{/if}
 						</div>
 					</div>
@@ -392,15 +399,15 @@
 									</div>
 								</div>
 							{/each}
-							<h5>Shipping: {shippingCost.toFixed(2)}</h5>
+							<h5>Shipping: {data.shipping.cost.toFixed(2)}</h5>
 
-							{#if selectedEntity === 'private'}
+							{#if data.client.type === 'private'}
 								<hgroup class="flex gap align-b">
-									<h5>Total: {total.toFixed(2)} €</h5>
-									<small>{Number(total.toFixed(2)) - Number(total.toFixed(2)) * 0.21}€ + VAT</small>
+									<h5>Total: {data.total.with_tax} €</h5>
+									<small>{data.total.without_tax} € + VAT</small>
 								</hgroup>
 							{:else}
-								<h5>Total: {total.toFixed(2) - total.toFixed(2) * 0.21} €</h5>
+								<h5>Total: {data.total.without_tax} €</h5>
 							{/if}
 						</div>
 					{:else}
