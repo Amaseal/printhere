@@ -29,7 +29,7 @@
 						gloss or matte finish.
 					</p>
 				</div>
-				<img src="../images/paper-square-stickers.png" alt="" />
+				<img src="../images/square-vinyl-gloss-stickers.png" alt="" />
 			</div>
 			<div class="grid align">
 				<div>
@@ -54,7 +54,7 @@
 						for creating eye-catching displays.
 					</p>
 				</div>
-				<img src="../images/paper-square-stickers.png" alt="" />
+				<img src="../images/posters.png" alt="" />
 			</div>
 			<div class="grid align">
 				<div>

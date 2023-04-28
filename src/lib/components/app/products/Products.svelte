@@ -1,12 +1,11 @@
 <script>
 	export let products;
 	export let category;
-	console.log(category);
 </script>
 
 <section>
 	<div class="container">
-		<div class="grid gap">
+		<div class="products">
 			{#each products as product}
 				<article>
 					<a href="{category.slug}/{product.slug}" class="flex collumn align">
@@ -22,6 +21,11 @@
 </section>
 
 <style>
+	.products {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 1rem;
+	}
 	article {
 		padding: 0;
 		overflow: hidden;

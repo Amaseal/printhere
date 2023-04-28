@@ -1,5 +1,5 @@
 import * as fs from "fs";
-const cron = require("node-cron");
+import cron from "node-cron";
 import { UPLOAD_PATH } from "$env/static/private";
 
 function scheduleTempCleanup() {

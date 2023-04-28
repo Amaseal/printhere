@@ -92,10 +92,12 @@
 				</div>
 
 				{#if open}
-					<ul class="mobile">
-						<li><a href="/products">Products</a></li>
-						<li><a href="/about">About</a></li>
-					</ul>
+					<div class="mobile">
+						<ul class="mobilenav">
+							<li><a href="/products">Products</a></li>
+							<li><a href="/about">About</a></li>
+						</ul>
+					</div>
 				{/if}
 			</nav>
 		{/if}
@@ -103,6 +105,11 @@
 </header>
 
 <style>
+	.mobilenav {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 	li {
 		position: relative;
 	}
@@ -134,9 +141,8 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: start;
+		display: grid;
+		place-content: center;
 		padding: 20px;
 		width: 100%;
 		height: 100vh;

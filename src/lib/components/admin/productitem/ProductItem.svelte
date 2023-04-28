@@ -5,19 +5,43 @@
 	import Close from 'svelte-material-icons/Close.svelte';
 
 	export let product;
+
 	export let categories;
 
 	$: slug = slugify(product.title).toLowerCase();
 
 	let editOpen = false;
 
-	let inputElements = product.prices.map((obj) => {});
+	let sizes = product.sizes.map((element) => {
+		return { value: element.size };
+	});
 
-	function addInput() {
-		inputElements = [...inputElements, {}];
+	let quantities = product.quantities.map((element) => {
+		return { value: element.quantity };
+	});
+
+	$: prices = sizes.flatMap((size) =>
+		quantities.map((quantity, index) => ({
+			size: size.value,
+			quantity: quantity.value,
+			price: product.prices[index].price
+		}))
+	);
+
+	function addSize() {
+		sizes = [...sizes, { value: '' }];
 	}
-	function deleteInput(index) {
-		inputElements = inputElements.filter((_, i) => i !== index);
+
+	function removeSize(index) {
+		sizes = sizes.filter((_, i) => i !== index);
+	}
+
+	function addQuantity() {
+		quantities = [...quantities, { value: '' }];
+	}
+
+	function removeQuantity(index) {
+		quantities = quantities.filter((_, i) => i !== index);
 	}
 </script>
 
@@ -90,49 +114,74 @@
 						<input type="file" name="image" id="image" required />
 					</div>
 					<div class="row sizes">
-						{#if inputElements.length > 0}
-							{#each inputElements as _, index}
-								<div class="grid align-b">
+						{#if sizes.length > 0}
+							{#each sizes as size, index}
+								<div class="flex gap align-b">
 									<div class="row">
 										<label for="size">Size</label>
-										<input value={product.sizes[index].size} type="text" name="size" />
+										<input type="text" name="size" bind:value={size.value} />
 									</div>
-									<div class="row">
-										<label for="quantity">Quantity</label>
-										<input
-											value={product.quantities[index].quantity}
-											type="number"
-											name="quantity"
-										/>
-									</div>
-									<div class="row">
-										<label for="price">Price</label>
-										<input
-											value={product.prices[index].price}
-											type="number"
-											step="0.01"
-											name="price"
-										/>
-									</div>
-									<div class="row">
-										<button
-											type="button"
-											on:click={() => deleteInput(index)}
-											class="outline delete warning">-</button
-										>
-									</div>
+									<button
+										type="button"
+										on:click={() => removeSize(index)}
+										class="outline delete warning small">-</button
+									>
 								</div>
 							{/each}
-							<button type="button" class="secondary outline" on:click={addInput}
-								>+ Click to add sizes and quantities</button
+							<button type="button" class="secondary outline" on:click={addSize}
+								>+ Click to add sizes</button
+							>
+						{:else}
+							<button type="button" class="secondary outline" on:click={addSize}
+								>+ Click to add sizes</button
+							>
+						{/if}
+					</div>
+
+					<div class="row sizes">
+						{#if quantities.length > 0}
+							{#each quantities as quantity, index}
+								<div class="flex align-b gap">
+									<div class="row">
+										<label for="quantity">Quantity</label>
+										<input type="number" name="quantity" bind:value={quantity.value} />
+									</div>
+
+									<button
+										type="button"
+										on:click={() => removeQuantity(index)}
+										class="outline delete warning small">-</button
+									>
+								</div>
+							{/each}
+							<button type="button" class="secondary outline" on:click={addQuantity}
+								>+ Click to add quantities</button
 							>
 						{:else}
 							<div class="flex align gap">
-								<button type="button" class="secondary outline" on:click={addInput}
-									>+ Click to add sizes and quantities</button
+								<button type="button" class="secondary outline" on:click={addQuantity}
+									>+ Click to add quantities</button
 								>
 							</div>
 						{/if}
+					</div>
+					<div class="row sizes">
+						{#each prices as price}
+							<div class="flex align-b gap">
+								<div>
+									<label for="pricesizes">Size</label>
+									<input type="text" value={price.size} name="pricesizes" readonly />
+								</div>
+								<div>
+									<label for="pricequantities">Quantity</label>
+									<input type="text" value={price.quantity} name="pricequantities" readonly />
+								</div>
+								<div>
+									<label for="price">Price</label>
+									<input type="text" value={price.price} name="price" required />
+								</div>
+							</div>
+						{/each}
 					</div>
 				</div>
 				<div class="grid">

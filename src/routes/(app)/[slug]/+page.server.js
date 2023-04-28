@@ -6,7 +6,11 @@ export async function load({ params }) {
       slug: params.slug,
     },
     include: {
-      products: true,
+      products: {
+        orderBy: {
+          title: "asc",
+        },
+      },
     },
   });
 

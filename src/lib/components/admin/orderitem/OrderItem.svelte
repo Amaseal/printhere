@@ -18,7 +18,11 @@
 <tr>
 	<th>{order.id}</th>
 	<th>{date}</th>
-	<th>{order.customer.name} {order.customer.surname}</th>
+	<th
+		>{order.customer.entity_type === 'PRIVATE'
+			? order.customer.privateEntity.name + ' ' + order.customer.privateEntity.surname
+			: order.customer.legalEntity.company_name}
+	</th>
 	<th
 		>{order.cart.cartItems[0].product.title}
 		{#if order.cart.cartItems.length > 1}
@@ -74,18 +78,29 @@
 					<table>
 						<thead>
 							<tr>
-								<td>Name</td>
-								<td>Surname</td>
+								<td>Customer</td>
+
 								<td>Email</td>
 								<td>Phone</td>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td>{order.customer.name}</td>
-								<td>{order.customer.surname}</td>
-								<td>{order.customer.email}</td>
-								<td>{order.customer.phone}</td>
+								<td
+									>{order.customer.entity_type === 'PRIVATE'
+										? order.customer.privateEntity.name + ' ' + order.customer.privateEntity.surname
+										: order.customer.legalEntity.company_name}
+								</td>
+								<td
+									>{order.customer.entity_type === 'PRIVATE'
+										? order.customer.privateEntity.email
+										: order.customer.legalEntity.email}</td
+								>
+								<td
+									>{order.customer.entity_type === 'PRIVATE'
+										? order.customer.privateEntity.phone
+										: order.customer.legalEntity.phone}</td
+								>
 							</tr>
 						</tbody>
 					</table>
@@ -139,7 +154,7 @@
 						<tbody>
 							<tr>
 								<td>{order.shipping}</td>
-								<td>{order.address}</td>
+								<td>{order.shipping_address}</td>
 								<td>{order.shipping === 'omniva' ? 10 : 20}</td>
 							</tr>
 						</tbody>

@@ -57,7 +57,6 @@
 	};
 
 	const addToCart = () => {
-		console.log(uploadedFile);
 		let item = {
 			product: {
 				title: data.product.title,
@@ -82,6 +81,7 @@
 
 <head>
 	<title>{data.product.title}</title>
+	<meta name="description" content={data.product.description} />
 </head>
 
 <section>
@@ -138,7 +138,9 @@
 
 				<hgroup class="flex gap align-b">
 					<h4>Total: {Number(selectedPrice.price).toFixed(2)} €</h4>
-					<small>{Number(selectedPrice.price) - Number(selectedPrice.price) * 0.21}€ + VAT</small>
+					<small
+						>{(Number(selectedPrice.price) - Number(selectedPrice.price) * 0.21).toFixed(2)}€ + VAT</small
+					>
 				</hgroup>
 
 				<button disabled={!selectedFile || error} class="small flex gap align" on:click={addToCart}

@@ -15,7 +15,26 @@ export async function load({ params }) {
     },
   });
 
-  product.sizes.sort((a, b) => a.price - b.price);
+  product.sizes.sort((a, b) => {
+    // Split the size strings into numerical components
+    const aSize = a.size.split("x").map(Number);
+    const bSize = b.size.split("x").map(Number);
+
+    // Compare the size components
+    if (aSize[0] < bSize[0]) {
+      return -1;
+    }
+    if (aSize[0] > bSize[0]) {
+      return 1;
+    }
+    if (aSize[1] < bSize[1]) {
+      return -1;
+    }
+    if (aSize[1] > bSize[1]) {
+      return 1;
+    }
+  });
+
   product.quantities.sort((a, b) => a.quantity - b.quantity);
 
   if (product) {

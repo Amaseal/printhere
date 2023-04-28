@@ -7,7 +7,11 @@ export async function load() {
     include: {
       category: true,
       quantities: true,
-      sizes: true,
+      sizes: {
+        orderBy: {
+          size: "asc",
+        },
+      },
       prices: true,
     },
   });
@@ -143,11 +147,7 @@ const remove = async ({ request }) => {
     },
   });
 
-  console.log(product);
-
   const priceObjects = product.prices.map((obj) => obj.id);
-
-  console.log(priceObjects);
 
   await db.price.deleteMany({
     where: {

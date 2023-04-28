@@ -66,7 +66,6 @@
 			body: JSON.stringify(data)
 		});
 		data = await res.json();
-		console.log(data);
 	};
 
 	onMount(async () => {
@@ -82,7 +81,6 @@
 	});
 
 	const updatePrice = async () => {
-		console.log();
 		const res = await fetch('/api/updatePrice', {
 			method: 'post',
 			headers: {
@@ -91,8 +89,6 @@
 			body: JSON.stringify(data)
 		});
 		data = await res.json();
-
-		console.log(data);
 
 		if (data.error) {
 			toast.error(data.error, {
@@ -127,38 +123,41 @@
 	};
 
 	async function pay(e) {
-		// avoid processing duplicates
 		if (processing) return;
 		processing = true;
-		// confirm payment with stripe
-		const result = await stripe.confirmPayment({
-			elements,
-			redirect: 'if_required'
+		const form = e.target;
+		const formData = new FormData(form);
+
+		formData.append('userdata', JSON.stringify(data));
+
+		const response = await fetch('/api/saveOrder', {
+			method: 'POST',
+			body: formData
 		});
-		// log results, for debugging
 
-		if (result.error) {
-			// payment failed, notify user
-			error = result.error;
-			processing = false;
-		} else {
-			const form = e.target;
-			const data = new FormData(form);
+		const responseData = await response.json();
 
-			data.append('userdata', data);
+		data = responseData.userdata;
 
-			const response = await fetch('/api/saveOrder', {
-				method: 'POST',
-				body: data
+		if ((responseData.success = true)) {
+			const result = await stripe.confirmPayment({
+				elements,
+				redirect: 'if_required'
 			});
+			// log results, for debugging
 
-			const responseData = await response.json();
-
-			if ((responseData.ok = true)) {
+			if (result.error) {
+				// payment failed, notify user
+				error = result.error;
+				processing = false;
+			} else {
 				goto('/thank-you');
 				$cart.items = [];
 			}
 		}
+		// avoid processing duplicates
+
+		// confirm payment with stripe
 	}
 </script>
 
@@ -170,7 +169,7 @@
 <section>
 	<div class="container">
 		{#if $cart.items.length > 0}
-			<div class="flex justify">
+			<div class="grid justify">
 				<form on:submit|preventDefault={pay} method="POST">
 					<div class="flex gap align">
 						<div class="radio">
@@ -213,11 +212,31 @@
 							<div class="flex gap">
 								<div class="col">
 									<label for="phone">Phone</label>
-									<input type="tel" name="phone" required placeholder="phone" />
+									<input type="tel" name="phone" required placeholder="Phone" />
 								</div>
 								<div class="col">
 									<label for="email">E-mail</label>
 									<input type="email" name="email" required placeholder="john.doe@email.com" />
+								</div>
+							</div>
+							<div class="flex gap">
+								<div class="col">
+									<label for="address">Address</label>
+									<input type="text" name="address" required placeholder="Address" />
+								</div>
+								<div class="col">
+									<label for="email">City</label>
+									<input type="text" name="city" required placeholder="City" />
+								</div>
+							</div>
+							<div class="flex gap">
+								<div class="col">
+									<label for="country">Country</label>
+									<input type="text" name="country" required placeholder="Country" />
+								</div>
+								<div class="col">
+									<label for="zip">Zip</label>
+									<input type="text" name="zip" required placeholder="Zip" />
 								</div>
 							</div>
 						</div>
@@ -226,11 +245,16 @@
 							<div class="flex gap">
 								<div class="col">
 									<label for="company">Company name</label>
-									<input type="text" name="company" required placeholder="Cool company" />
+									<input type="text" name="company" required placeholder="Company name" />
 								</div>
 								<div class="col">
-									<label for="surname">Country</label>
-									<select bind:value={data.client.country} name="regNr" required placeholder="Doe">
+									<label for="surname">Registred Country</label>
+									<select
+										bind:value={data.client.country}
+										name="regNr"
+										required
+										placeholder="Reg. number"
+									>
 										<option value="LV">Latvia</option>
 										<option value="EE">Estonia</option>
 										<option value="LT">Lithuania</option>
@@ -245,25 +269,45 @@
 									<input
 										bind:value={data.client.vat.nr}
 										type="text"
-										name="vat-nr"
+										name="vat_nr"
 										required
 										on:change={() => handleVat()}
-										placeholder="Cool company"
+										placeholder="VAT Number"
 									/>
 								</div>
 								<div class="col">
 									<label for="reg_nr">Reg. Nr.</label>
-									<input type="text" name="reg_nr" required placeholder="Doe" />
+									<input type="text" name="reg_nr" required placeholder="Reg. number" />
 								</div>
 							</div>
 							<div class="flex gap">
 								<div class="col">
 									<label for="phone">Phone</label>
-									<input type="tel" name="phone" required placeholder="phone" />
+									<input type="tel" name="phone" required placeholder="Phone" />
 								</div>
 								<div class="col">
 									<label for="email">E-mail</label>
 									<input type="email" name="email" required placeholder="john.doe@email.com" />
+								</div>
+							</div>
+							<div class="flex gap">
+								<div class="col">
+									<label for="address">Address</label>
+									<input type="text" name="address" required placeholder="Address" />
+								</div>
+								<div class="col">
+									<label for="email">City</label>
+									<input type="text" name="city" required placeholder="City" />
+								</div>
+							</div>
+							<div class="flex gap">
+								<div class="col">
+									<label for="country">Country</label>
+									<input type="text" name="country" required placeholder="Country" />
+								</div>
+								<div class="col">
+									<label for="zip">Zip</label>
+									<input type="text" name="zip" required placeholder="Zip" />
 								</div>
 							</div>
 						</div>
@@ -273,7 +317,7 @@
 					<h5>Shipping</h5>
 					<div class="info">
 						<label for="">Select shipping method:</label>
-						<div class="flex gap align">
+						<div class="grid gap align">
 							<div class="radio">
 								<input
 									bind:group={data.shipping.type}
@@ -310,7 +354,7 @@
 						{#if data.shipping.type === 'omniva'}
 							<label for="omniva"> Select parlcel machine:</label>
 							<Select
-								name="address"
+								name="shipping_address"
 								--border="1px solid var(--form-element-border-color)"
 								--border-hover="1px solid var(--form-element-border-color)"
 								--border-focused="1px solid var(--primary)"
@@ -327,25 +371,27 @@
 							/>
 						{:else if data.shipping.type === 'post'}
 							<label for="post">Enter shipping address</label>
-							<input type="text" name="address" />
+							<input type="text" name="shipping_address" />
 						{/if}
 					</div>
 					<br />
 					<h5>Promo Code</h5>
 					<div class="info">
 						<form class="promocode" on:submit|preventDefault={() => updatePrice()}>
-							<div class="flex align start gap promoitems">
+							<div class="grid align start gap promoitems">
 								<label for="promo">Code:</label>
 								<input type="text" name="promo" bind:value={data.promo.code} />
 
-								<button type="submit">Submit</button>
-								{#key data.promo.discount}
-									{#if data.promo.discount > 0}
-										<p>Discount: {data.promo.discount} %</p>
-									{:else if data?.error}
-										<p class="error">{data.error}</p>
-									{/if}
-								{/key}
+								<button disabled={data.promo.valid} type="submit">Submit</button>
+								<div class="erros">
+									{#key data.promo.discount}
+										{#if data.promo.discount > 0}
+											<p>Discount: {data.promo.discount} %</p>
+										{:else if data?.error}
+											<p class="error">{data.error}</p>
+										{/if}
+									{/key}
+								</div>
 							</div>
 						</form>
 					</div>
@@ -404,7 +450,7 @@
 							{#if data.client.type === 'private'}
 								<hgroup class="flex gap align-b">
 									<h5>Total: {data.total.with_tax} €</h5>
-									<small>{data.total.without_tax} € + VAT</small>
+									<small>{data.total.without_tax.toFixed(2)} € + VAT</small>
 								</hgroup>
 							{:else}
 								<h5>Total: {data.total.without_tax} €</h5>
@@ -422,9 +468,6 @@
 </section>
 
 <style>
-	.promoitems > * {
-		width: 25%;
-	}
 	.promoitems > label {
 		width: auto;
 	}
@@ -538,10 +581,26 @@
 	section {
 		min-height: 60vh;
 	}
-	form {
-		width: 50%;
-	}
+
 	.col {
 		width: 100%;
+	}
+
+	@media only screen and (max-width: 1000px) {
+		.cart {
+			order: 1;
+			position: relative;
+			top: 0;
+			width: 100%;
+		}
+		.info {
+			width: 100%;
+		}
+		form {
+			order: 2;
+		}
+		.promoitems > * {
+			width: 100%;
+		}
 	}
 </style>

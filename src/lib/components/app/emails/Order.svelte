@@ -12,11 +12,10 @@
 		Column
 	} from 'svelte-email';
 
-	export let products;
+	export let userdata;
 	export let client;
-	export let shipping;
-	export let address;
-	export let total;
+
+	console.log({ userdata }, { client });
 
 	let date = new Date();
 
@@ -85,7 +84,7 @@
 			/>
 			<Hr style={hr} />
 			<Heading as="h1">Order Confirmation</Heading>
-			<Text style={paragraph}>{client.name}, Thank you for your order!</Text>
+			<Text style={paragraph}>{client.company}, Thank you for your order!</Text>
 			<Text style={paragraph}
 				>We've recieved your order and will contact you as soon as your order is shipped.</Text
 			>
@@ -98,7 +97,7 @@
 			<Text style={paragraph}>{date}</Text>
 		</Container>
 		<Container style={container}>
-			{#each products as product}
+			{#each userdata.cart.items as product}
 				<table>
 					<tbody>
 						<tr>
@@ -124,7 +123,13 @@
 										</tr>
 									</tbody>
 								</table>
-								<Text style={paragraph2}>Price: {product.price.price.toFixed(2)} Eur</Text>
+								{#if userdata.client.type === 'legal'}
+									<Text style={paragraph2}
+										>Price: {(product.price.price - product.price.price * 0.21).toFixed(2)} Eur</Text
+									>
+								{:else}
+									<Text style={paragraph2}>Price: {product.price.price} Eur</Text>
+								{/if}
 							</td>
 						</tr>
 					</tbody>
@@ -133,9 +138,13 @@
 			{/each}
 		</Container>
 
-		<Heading as="h3">Shipping: {shipping}</Heading>
-		<Heading as="h3">Address: {address}</Heading>
-		<Heading as="h3">Total: {total.toFixed(2)} Eur</Heading>
+		<Heading as="h3">Shipping: {userdata.shipping.type}</Heading>
+		<Heading as="h3">Address: {client.address}</Heading>
+		{#if userdata.client.type === 'legal'}
+			<Heading as="h3">Total: {userdata.total.without_tax} Eur</Heading>
+		{:else}
+			<Heading as="h3">Total: {userdata.total.with_tax} Eur</Heading>
+		{/if}
 	</Section>
 	<Hr style={hr} />
 	<Section>

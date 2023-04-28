@@ -76,7 +76,7 @@ model Order {
   cart       Cart?
   customer   Customer?
   shipping   String
-  address    String
+  shipping_address    String
   ordered_at DateTime  @default(now())
   shipped    Boolean   @default(false)
   done       Boolean   @default(false)
@@ -100,8 +100,12 @@ model Customer {
   order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId       Int            @unique
   entity_type   EntityType
-  privateEntity PrivateEntity? @relation(fields: [privateEntityId], references: [id])
-  legalEntity   LegalEntity?   @relation(fields: [legalEntityId], references: [id])
+  privateEntity PrivateEntity? @relation(fields: [privateEntityId], references: [id], onDelete: Cascade)
+  legalEntity   LegalEntity?   @relation(fields: [legalEntityId], references: [id], onDelete: Cascade)
+  zip String
+  city String
+  country String
+  address String
 
   privateEntityId Int?
   legalEntityId   Int?

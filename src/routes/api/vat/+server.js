@@ -15,6 +15,8 @@ export async function POST({ request }) {
 
   if ((validationInfo.valid = false)) {
     data.error = "Failed to validate vat nr, please try again";
+  } else {
+    data.error = null;
   }
 
   return json(data);

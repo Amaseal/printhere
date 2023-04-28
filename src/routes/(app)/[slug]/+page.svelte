@@ -2,7 +2,6 @@
 	import Products from '$lib/components/app/products/Products.svelte';
 
 	export let data;
-	console.log(data);
 </script>
 
 <svelte:head>

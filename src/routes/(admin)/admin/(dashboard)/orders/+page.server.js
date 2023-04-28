@@ -16,14 +16,23 @@ export async function load() {
           cartItems: {
             include: {
               product: true,
-              size: true,
+              size: {
+                orderBy: {
+                  size: "asc",
+                },
+              },
               quantity: true,
               price: true,
             },
           },
         },
       },
-      customer: true,
+      customer: {
+        include: {
+          privateEntity: true,
+          legalEntity: true,
+        },
+      },
     },
   });
   if (orders) {
@@ -59,8 +68,6 @@ const remove = async ({ request }) => {
   });
 
   const cartItems = order.cart.cartItems.map((obj) => obj.id);
-
-  console.log(cartItems);
 
   await db.cartItem.deleteMany({
     where: {

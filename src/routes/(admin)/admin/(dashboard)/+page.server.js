@@ -6,8 +6,6 @@ for (let i = 0; i < 6; i++) {
   pastMonths.push(date);
 }
 
-console.log(pastMonths);
-
 //[ '2023-02', '2022-12', '2022-11', '2022-11', '2022-09', '2022-09' ]
 
 export async function load() {
@@ -19,8 +17,6 @@ export async function load() {
       month: "desc",
     },
   });
-
-  console.log(orderCount);
 
   const promoCodes = await db.promo.findMany();
   if (promoCodes && orderCount) {
