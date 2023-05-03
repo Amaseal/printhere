@@ -4,6 +4,7 @@
 	import { fly } from 'svelte/transition';
 	import Close from 'svelte-material-icons/Close.svelte';
 	import Cart from 'svelte-material-icons/Cart.svelte';
+	import TrashCanOutline from 'svelte-material-icons/TrashCanOutline.svelte';
 
 	const removeProduct = (index) => {
 		$cart.items.splice(index, 1);
@@ -17,10 +18,12 @@
 
 <section>
 	<div class="cart flex collumn" transition:fly={{ x: 200 }}>
-		<a class="close" role="button" href="#close" on:click={() => ($globals.cart = false)}
-			><Close size="20px" /></a
-		>
-		<h4 class="flex align gap"><Cart size="20px" />Your Cart:</h4>
+		<h4 class="flex align gap">
+			<Cart size="20px" />Your Cart:
+			<a class="close" role="button" href="#close" on:click={() => ($globals.cart = false)}
+				><Close size="20px" /></a
+			>
+		</h4>
 
 		{#if $cart.items.length > 0}
 			{#each $cart.items as item, index}
@@ -35,7 +38,7 @@
 					</div>
 					<div class="flex collumn end">
 						<a href="#delete" role="button" class="delete" on:click={() => removeProduct(index)}
-							><Close /></a
+							><TrashCanOutline /></a
 						>
 						<h5 class="price">{Number(item.price.price).toFixed(2)} €</h5>
 					</div>
@@ -114,10 +117,8 @@
 		background-color: var(--primary);
 	}
 	.close {
-		position: absolute;
-		top: 40px;
-		right: 370px;
 		width: 40px;
+		margin-left: auto;
 		height: 40px;
 		display: grid;
 		place-items: center;
@@ -135,9 +136,9 @@
 	}
 
 	.cart {
-		padding: var(--spacing);
-		padding-right: 30px;
-		width: 350px;
+		padding: calc(var(--spacing) * 1.5);
+		padding-right: calc(var(--spacing) * 2.5);
+		width: 450px;
 		height: 100%;
 		position: absolute;
 		top: 0;
@@ -150,7 +151,7 @@
 	}
 	@media only screen and (max-width: 600px) {
 		.cart {
-			width: 300px;
+			width: 100%;
 		}
 		.close {
 			right: 320px;

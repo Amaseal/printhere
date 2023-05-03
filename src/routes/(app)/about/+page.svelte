@@ -1,7 +1,7 @@
-<head>
+<svelte:head>
 	<title>About Us</title>
 	<meta name="description" content="Here's everything you need to know about printhere.eu" />
-</head>
+</svelte:head>
 
 <section>
 	<div class="container">

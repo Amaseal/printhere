@@ -450,7 +450,7 @@
 							{#if data.client.type === 'private'}
 								<hgroup class="flex gap align-b">
 									<h5>Total: {data.total.with_tax} €</h5>
-									<small>{data.total.without_tax.toFixed(2)} € + VAT</small>
+									<small>{Number(data.total.without_tax).toFixed(2)} € + VAT</small>
 								</hgroup>
 							{:else}
 								<h5>Total: {data.total.without_tax} €</h5>

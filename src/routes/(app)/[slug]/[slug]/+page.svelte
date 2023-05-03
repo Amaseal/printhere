@@ -79,10 +79,10 @@
 	};
 </script>
 
-<head>
+<svelte:head>
 	<title>{data.product.title}</title>
 	<meta name="description" content={data.product.description} />
-</head>
+</svelte:head>
 
 <section>
 	<div class="container">
