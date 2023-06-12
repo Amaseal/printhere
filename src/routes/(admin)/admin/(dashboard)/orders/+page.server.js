@@ -16,11 +16,7 @@ export async function load() {
           cartItems: {
             include: {
               product: true,
-              size: {
-                orderBy: {
-                  size: "asc",
-                },
-              },
+              size: true,
               quantity: true,
               price: true,
             },
@@ -90,6 +86,7 @@ const save = async ({ request }) => {
   const done = data.get("done");
   const shipped = data.get("shipped");
   const code = data.get("code");
+  const email = data.get("email");
 
   const shippedTrue = shipped === "on" ? true : false;
   const doneTrue = done === "on" ? true : false;
@@ -110,9 +107,21 @@ const save = async ({ request }) => {
         id: Number(id),
       },
       select: {
-        customer: true,
+        customer: {
+          include: {
+            privateEntity: true,
+            legalEntity: true,
+          },
+        },
       },
     });
+
+    const customer =
+      order.customer.entity_type === "PRIVATE"
+        ? order.customer.privateEntity.name +
+          " " +
+          order.customer.privateEntity.surname
+        : order.customer.legalEntity.company_name;
     const transporter = nodemailer.createTransport({
       host: "printhere.eu",
       port: 465,
@@ -127,14 +136,14 @@ const save = async ({ request }) => {
     const clientHtml = render({
       template: Shipped,
       props: {
-        client: order.customer,
+        client: customer,
         code: code,
       },
     });
 
     const shippedOptions = {
       from: SECRET_MAIL_USER,
-      to: order.customer.email,
+      to: email,
       subject: "Order shipped",
       html: clientHtml,
     };

@@ -103,7 +103,7 @@
 						<tr>
 							<td>
 								<Img
-									src={`https://www.printhere.lv/${product.product.imgUrl.slice(3)}`}
+									src={`https://www.printhere.eu/${product.product.imgUrl.slice(3)}`}
 									alt="Product image"
 									style={image}
 									width="100"

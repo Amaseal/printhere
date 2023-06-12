@@ -122,6 +122,10 @@
 		}
 	};
 
+	function roundToTwoDecimalPlaces(value) {
+		return (Math.round(value * 100) / 100).toFixed(2);
+	}
+
 	async function pay(e) {
 		if (processing) return;
 		processing = true;
@@ -248,13 +252,8 @@
 									<input type="text" name="company" required placeholder="Company name" />
 								</div>
 								<div class="col">
-									<label for="surname">Registred Country</label>
-									<select
-										bind:value={data.client.country}
-										name="regNr"
-										required
-										placeholder="Reg. number"
-									>
+									<label for="reg_country">Registred Country</label>
+									<select bind:value={data.client.country} name="regNr" required>
 										<option value="LV">Latvia</option>
 										<option value="EE">Estonia</option>
 										<option value="LT">Lithuania</option>
@@ -441,16 +440,18 @@
 										</div>
 									</div>
 									<div class="flex collumn start">
-										<h5 class="price">{Number(item.price.price).toFixed(2)}</h5>
+										<h5 class="price">
+											{roundToTwoDecimalPlaces(Number(item.price.price))}
+										</h5>
 									</div>
 								</div>
 							{/each}
-							<h5>Shipping: {data.shipping.cost.toFixed(2)}</h5>
+							<h5>Shipping: {roundToTwoDecimalPlaces(data.shipping.cost)}</h5>
 
 							{#if data.client.type === 'private'}
 								<hgroup class="flex gap align-b">
 									<h5>Total: {data.total.with_tax} €</h5>
-									<small>{Number(data.total.without_tax).toFixed(2)} € + VAT</small>
+									<small>{roundToTwoDecimalPlaces(Number(data.total.without_tax))} € + VAT</small>
 								</hgroup>
 							{:else}
 								<h5>Total: {data.total.without_tax} €</h5>

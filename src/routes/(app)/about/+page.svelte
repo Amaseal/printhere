@@ -29,7 +29,7 @@
 						gloss or matte finish.
 					</p>
 				</div>
-				<img src="../images/square-vinyl-gloss-stickers.png" alt="" />
+				<img src="../images/stickers.webp" alt="" />
 			</div>
 			<div class="grid align">
 				<div>
@@ -40,7 +40,7 @@
 						cardstock, eco-friendly options or laminated cards that offer a high-end look and feel.
 					</p>
 				</div>
-				<img src="../images/business-cards.png" alt="" />
+				<img src="../images/business-cards.webp" alt="" />
 			</div>
 		</div>
 
@@ -54,7 +54,7 @@
 						for creating eye-catching displays.
 					</p>
 				</div>
-				<img src="../images/posters.png" alt="" />
+				<img src="../images/posters.webp" alt="" />
 			</div>
 			<div class="grid align">
 				<div>
@@ -65,7 +65,7 @@
 						to suit your specific needs.
 					</p>
 				</div>
-				<img src="../images/flyers.png" alt="" />
+				<img src="../images/flyers.webp" alt="" />
 			</div>
 		</div>
 		<h2>FAQ</h2>

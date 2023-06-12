@@ -16,6 +16,8 @@
 		background-color: var(--background-color-accent);
 		padding: 20px;
 		width: 100%;
+		max-height: 93vh;
+		overflow: auto;
 		border-radius: var(--border-radius);
 		margin: 20px;
 	}

@@ -26,6 +26,10 @@ export async function POST({ request }) {
     return json(data);
   }
 
+  function roundToTwoDecimalPlaces(value) {
+    return Math.round(value * 100) / 100;
+  }
+
   function parseAddress(address) {
     try {
       const obj = JSON.parse(address);
@@ -88,45 +92,41 @@ export async function POST({ request }) {
     userdata.shipping.cost = 5;
 
     if (userdata.promo.valid) {
-      userdata.total.with_tax = (
+      userdata.total.with_tax = roundToTwoDecimalPlaces(
         userdata.total.with_tax * ((100 - userdata.promo.discount) / 100) +
-        userdata.shipping.cost
+          userdata.shipping.cost
       ).toFixed(2);
 
-      userdata.total.without_tax = (
-        userdata.total.with_tax -
-        userdata.total.with_tax * 0.21
+      userdata.total.without_tax = roundToTwoDecimalPlaces(
+        userdata.total.with_tax - userdata.total.with_tax * 0.21
       ).toFixed(2);
     } else {
-      userdata.total.with_tax = (
+      userdata.total.with_tax = roundToTwoDecimalPlaces(
         userdata.total.with_tax + userdata.shipping.cost
       ).toFixed(2);
 
-      userdata.total.without_tax = (
-        userdata.total.with_tax -
-        userdata.total.with_tax * 0.21
+      userdata.total.without_tax = roundToTwoDecimalPlaces(
+        userdata.total.with_tax - userdata.total.with_tax * 0.21
       ).toFixed(2);
     }
   } else if (userdata.shipping.type === "post") {
     userdata.shipping.cost = 10;
     if (userdata.promo.valid) {
-      userdata.total.with_tax = (
+      userdata.total.with_tax = roundToTwoDecimalPlaces(
         userdata.total.with_tax * ((100 - userdata.promo.discount) / 100) +
-        userdata.shipping.cost
+          userdata.shipping.cost
       ).toFixed(2);
 
-      userdata.total.without_tax = (
-        userdata.total.with_tax -
-        userdata.total.with_tax * 0.21
+      userdata.total.without_tax = roundToTwoDecimalPlaces(
+        userdata.total.with_tax - userdata.total.with_tax * 0.21
       ).toFixed(2);
     } else {
-      userdata.total.with_tax = (
+      userdata.total.with_tax = roundToTwoDecimalPlaces(
         userdata.total.with_tax + userdata.shipping.cost
       ).toFixed(2);
 
-      userdata.total.without_tax = (
-        userdata.total.with_tax -
-        userdata.total.with_tax * 0.21
+      userdata.total.without_tax = roundToTwoDecimalPlaces(
+        userdata.total.with_tax - userdata.total.with_tax * 0.21
       ).toFixed(2);
     }
   }
@@ -192,12 +192,10 @@ export async function POST({ request }) {
         quantity: 1,
         description: `${item.product.title} - ${item.size.size} - ${item.quantity.quantity}`,
         "tax-rate": 21,
-        price: (
-          (item.price.price *
-            (userdata.promo.discount > 0
-              ? (100 - userdata.promo.discount) / 100
-              : 1)) /
-          (1 + 0.21)
+        price: roundToTwoDecimalPlaces(
+          (item.price.price * (100 - userdata.promo.discount)) /
+            100 /
+            (1 + 0.21)
         ).toFixed(2),
       };
     });
@@ -206,7 +204,9 @@ export async function POST({ request }) {
       quantity: 1,
       description: "Shipping",
       "tax-rate": 21,
-      price: (Number(userdata.shipping.cost) / (1 + 0.21)).toFixed(2),
+      price: roundToTwoDecimalPlaces(
+        Number(userdata.shipping.cost) / (1 + 0.21)
+      ).toFixed(2),
     });
 
     client = {
@@ -217,6 +217,7 @@ export async function POST({ request }) {
       zip: data.zip,
       custom1: `email: ${data.email}`,
       custom2: `phone: ${data.phone}`,
+      custom3: `Shipping: ${parsedAddress}`,
     };
 
     customerData = {
@@ -241,21 +242,23 @@ export async function POST({ request }) {
       },
     };
     await stripe.paymentIntents.update(userdata.stripe.id, {
-      amount: (userdata.total.with_tax * 100).toFixed(0),
+      amount: roundToTwoDecimalPlaces(userdata.total.with_tax * 100),
     });
   } else if (userdata.client.type === "legal") {
     invoiceProducts = parsedCart.items.map((item) => {
-      let productPrice = (
+      let productPrice = roundToTwoDecimalPlaces(
         item.price.price *
-        (userdata.promo.discount > 0
-          ? (100 - userdata.promo.discount) / 100
-          : 1)
+          (userdata.promo.discount > 0
+            ? (100 - userdata.promo.discount) / 100
+            : 1)
       ).toFixed(2);
       return {
         quantity: 1,
         description: `${item.product.title} - ${item.size.size} - ${item.quantity.quantity}`,
         "tax-rate": 0,
-        price: (productPrice - productPrice * 0.21).toFixed(2),
+        price: roundToTwoDecimalPlaces(
+          productPrice - productPrice * 0.21
+        ).toFixed(2),
       };
     });
 
@@ -263,13 +266,10 @@ export async function POST({ request }) {
       quantity: 1,
       description: "Shipping",
       "tax-rate": 0,
-      price: (
-        Number(userdata.shipping.cost) -
-        Number(userdata.shipping.cost) * 0.21
+      price: roundToTwoDecimalPlaces(
+        Number(userdata.shipping.cost) - Number(userdata.shipping.cost) * 0.21
       ).toFixed(2),
     });
-
-    console.log(parsedAddress);
 
     client = {
       company: data.company,
@@ -278,8 +278,8 @@ export async function POST({ request }) {
       country: data.country,
       zip: data.zip,
       custom1: `email: ${data.email}`,
-      custom3: `VAT Nr.: ${data.vat_nr}`,
-      custom4: `Reg. Nr.: ${data.reg_nr}`,
+      custom2: `VAT Nr.: ${data.vat_nr}, Reg. Nr.: ${data.reg_nr}`,
+      custom3: `Shipping: ${parsedAddress}`,
     };
 
     customerData = {
@@ -305,7 +305,7 @@ export async function POST({ request }) {
       },
     };
     await stripe.paymentIntents.update(userdata.stripe.id, {
-      amount: (userdata.total.without_tax * 100).toFixed(0),
+      amount: roundToTwoDecimalPlaces(userdata.total.without_tax * 100),
     });
   }
 
@@ -344,6 +344,7 @@ export async function POST({ request }) {
         zip: "LV-5101",
         city: "Aizkraukle",
         country: "Latvia",
+        custom1: "Reg. Nr.: 40103663033",
       },
       client: client,
       information: {
@@ -352,7 +353,8 @@ export async function POST({ request }) {
         "due-date": `${day}-${month}-${year}`,
       },
       products: invoiceProducts,
-      "bottom-notice": "Thank you for choosing us!",
+      "bottom-notice":
+        "This invoice is prepared electronically and is valid without a signature.",
       settings: {
         currency: "EUR",
         "tax-notation": "VAT",

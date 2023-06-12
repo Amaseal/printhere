@@ -6,8 +6,16 @@
 	import { Hamburger } from 'svelte-hamburgers';
 	import { fade } from 'svelte/transition';
 
+	export let data;
+
+	let dropdown;
 	let open;
 	let width;
+
+	function close() {
+		open = false;
+		dropdown = false;
+	}
 </script>
 
 <svelte:window bind:innerWidth={width} />
@@ -32,7 +40,18 @@
 					</li>
 				</ul>
 				<ul class="main">
-					<li><a href="/products">All products</a></li>
+					<li on:mouseenter={() => (dropdown = true)} on:mouseleave={() => (dropdown = false)}>
+						Products
+						{#if dropdown}
+							<ul class="dropdown">
+								{#each data.categories as category}
+									<li><a href="/{category.slug}" on:click={() => close()}>{category.title}</a></li>
+								{/each}
+								<li><a href="/products" on:click={() => close()}>All products</a></li>
+							</ul>
+						{/if}
+					</li>
+
 					<li><a href="/about">About</a></li>
 				</ul>
 				<ul>
@@ -93,8 +112,24 @@
 
 				{#if open}
 					<div class="mobile">
-						<ul class="mobilenav">
-							<li><a href="/products">Products</a></li>
+						<ul class="mobilenav flex gap">
+							<li
+								class="relative"
+								on:mouseenter={() => (dropdown = true)}
+								on:mouseleave={() => (dropdown = false)}
+							>
+								Products
+								{#if dropdown}
+									<ul class="dropdown">
+										{#each data.categories as category}
+											<li>
+												<a href="/{category.slug}" on:click={() => close()}>{category.title}</a>
+											</li>
+										{/each}
+										<li><a href="/products" on:click={() => close()}>All products</a></li>
+									</ul>
+								{/if}
+							</li>
 							<li><a href="/about">About</a></li>
 						</ul>
 					</div>
@@ -105,10 +140,20 @@
 </header>
 
 <style>
-	.mobilenav {
+	.relative {
+		position: relative;
+	}
+	.dropdown {
+		background-color: var(--background-color);
+		padding: 1rem;
+		position: absolute;
+		width: 200px;
+		transform: translateX(-25%);
+		top: 50px;
+		left: 0;
+		border-radius: var(--border-radius);
 		display: flex;
 		flex-direction: column;
-		align-items: center;
 	}
 	li {
 		position: relative;
@@ -145,7 +190,7 @@
 		place-content: center;
 		padding: 20px;
 		width: 100%;
-		height: 100vh;
+		height: 35vh;
 		background-color: var(--background-color);
 	}
 	a {

@@ -12,25 +12,20 @@
 
 	let editOpen = false;
 
-	let sizes = product.sizes.map((element) => {
-		return { value: element.size };
-	});
+	export let form;
 
-	let quantities = product.quantities.map((element) => {
-		return { value: element.quantity };
-	});
+	let sizes = [{ value: '' }];
+	let quantities = [{ value: '' }];
 
 	$: prices = sizes.flatMap((size) =>
-		quantities.map((quantity, index) => ({
-			size: size.value,
-			quantity: quantity.value,
-			price: product.prices[index].price
-		}))
+		quantities.map((quantity) => ({ size: size.value, quantity: quantity.value }))
 	);
 
 	function addSize() {
 		sizes = [...sizes, { value: '' }];
 	}
+
+	$: console.log(prices);
 
 	function removeSize(index) {
 		sizes = sizes.filter((_, i) => i !== index);
@@ -42,6 +37,12 @@
 
 	function removeQuantity(index) {
 		quantities = quantities.filter((_, i) => i !== index);
+	}
+
+	let open = false;
+
+	if (form?.success) {
+		open = false;
 	}
 </script>
 
@@ -76,7 +77,7 @@
 				>
 				<p>Add a Product</p>
 			</header>
-			<form action="?/update" method="POST" enctype="multipart/form-data">
+			<form action="?/edit" method="POST" enctype="multipart/form-data">
 				<div class="flex gap">
 					<div class="row">
 						<div class="flex gap">
@@ -109,7 +110,7 @@
 								/>
 							</div>
 						</div>
-
+						<input type="text" value={product.id} class="hidden" name="id" id="id" />
 						<label for="image">Image</label>
 						<input type="file" name="image" id="image" required />
 					</div>

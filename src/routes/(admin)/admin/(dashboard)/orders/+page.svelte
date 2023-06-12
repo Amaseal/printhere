@@ -1,15 +1,5 @@
 <script>
-	import slugify from 'slugify';
-	import Plus from 'svelte-material-icons/Plus.svelte';
-	import Close from 'svelte-material-icons/Close.svelte';
-	import CategoryItem from '$lib/components/admin/categoryitem/CategoryItem.svelte';
 	import OrderItem from '$lib/components/admin/orderitem/OrderItem.svelte';
-
-	let title = '';
-	$: slug = slugify(title).toLowerCase();
-
-	let open = false;
-
 	export let form;
 	export let data;
 
@@ -49,33 +39,6 @@
 			{/if}
 		</tbody>
 	</table>
-
-	{#if open}
-		<dialog open>
-			<article>
-				<header>
-					<a
-						href="#close"
-						aria-label="Close"
-						class="close flex align secondary outline"
-						on:click={() => (open = false)}><Close /></a
-					>
-					<p>Add a category</p>
-				</header>
-				<form action="?/save" method="POST" enctype="multipart/form-data">
-					<label for="title">Title</label>
-					<input bind:value={title} type="text" name="title" required />
-					<label for="slug">Slug</label>
-					<input bind:value={slug} type="text" name="slug" readonly />
-					<label for="image">Image</label>
-					<input type="file" name="image" id="image" required />
-
-					<button type="submit">Save</button>
-					<button on:click={() => (open = false)} class="secondary">Cancel</button>
-				</form>
-			</article>
-		</dialog>
-	{/if}
 </section>
 
 <style>

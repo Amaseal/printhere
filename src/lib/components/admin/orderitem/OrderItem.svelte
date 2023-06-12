@@ -165,6 +165,16 @@
 					<input type="text" name="code" />
 				{/if}
 
+				<input
+					type="text"
+					name="email"
+					id="email"
+					class="hidden"
+					value={order.customer.entity_type === 'PRIVATE'
+						? order.customer.privateEntity.email
+						: order.customer.legalEntity.email}
+				/>
+
 				<button type="submit">Save</button>
 			</form>
 		</article>

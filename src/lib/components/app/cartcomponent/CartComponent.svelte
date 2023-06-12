@@ -20,7 +20,7 @@
 	<div class="cart flex collumn" transition:fly={{ x: 200 }}>
 		<h4 class="flex align gap">
 			<Cart size="20px" />Your Cart:
-			<a class="close" role="button" href="#close" on:click={() => ($globals.cart = false)}
+			<a class="close" role="button" href="?close" on:click={() => ($globals.cart = false)}
 				><Close size="20px" /></a
 			>
 		</h4>

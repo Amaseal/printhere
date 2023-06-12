@@ -4,9 +4,11 @@
 	import '../../styles.css';
 	import Footer from '$lib/components/app/footer/Footer.svelte';
 	import { Toaster } from 'svelte-french-toast';
+
+	export let data;
 </script>
 
-<Header />
+<Header {data} />
 
 <main>
 	<slot />

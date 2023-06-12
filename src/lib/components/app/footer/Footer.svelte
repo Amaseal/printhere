@@ -10,26 +10,29 @@
 				/>
 				<img class="logo" src="../logo.svg" alt="logo" />
 			</picture>
+			<strong>Adress:</strong>
 			<p>Lāčplēša street 9, Aizkraukle, Latvia, LV-5101</p>
+			<strong>Phone:</strong>
 			<p>+371 25 776 699</p>
+			<strong>E-mail:</strong>
 			<p>info@printhere.eu</p>
 		</div>
 
 		<form action="">
-			<h5>Contact us:</h5>
+			<h3>Contact us:</h3>
 			<div class="flex gap">
 				<div>
 					<label for="name">Name</label>
-					<input type="text" name="name" id="name" />
+					<input type="text" name="name" id="name" placeholder="Name" />
 				</div>
 				<div>
 					<label for="email">Email</label>
-					<input type="email" name="email" id="email" />
+					<input type="email" name="email" id="email" placeholder="E-mail" />
 				</div>
 			</div>
 
 			<label for="message"> Message</label>
-			<textarea name="message" id="message" cols="30" rows="2" />
+			<textarea name="message" id="message" cols="30" rows="2" placeholder="Messagee" />
 			<button type="submit">Send</button>
 		</form>
 	</div>

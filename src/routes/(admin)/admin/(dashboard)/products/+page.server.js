@@ -1,6 +1,7 @@
 import { db } from "$lib/scripts/db";
 import * as fs from "fs";
 import { UPLOAD_PATH } from "$env/static/private";
+import { connect } from "http2";
 
 export async function load() {
   const products = await db.product.findMany({
@@ -180,14 +181,15 @@ const edit = async ({ request }) => {
   const category = data.get("category");
   const quantities = data.getAll("quantity");
   const prices = data.getAll("price");
+  const id = data.get("id");
 
-  const product = await db.category.findUnique({
+  const product = await db.product.findUnique({
     where: {
       id: Number(id),
     },
   });
 
-  const path = category.imgUrl.slice(2);
+  const path = product.imgUrl.slice(2);
 
   fs.unlink(`${UPLOAD_PATH}${path}`, (err) => {
     if (err) {
@@ -195,13 +197,15 @@ const edit = async ({ request }) => {
     }
   });
 
-  await db.cproduct.update({
+  await db.product.update({
     where: {
       id: Number(id),
     },
     data: {
       title: title,
       slug: slug,
+      categoryId: Number(category),
+      description: description,
       imgUrl: `../images/${slug + "." + file.name.split(".").pop()}`,
     },
   });

@@ -158,8 +158,8 @@
 	.radio > label {
 		display: grid;
 		place-items: center;
-		height: 60px;
-		width: 100px;
+		min-height: 60px;
+		min-width: 120px;
 		padding: 10px;
 		background-color: var(--background-color-accent);
 		border: 1px solid var(--background-color-accent);

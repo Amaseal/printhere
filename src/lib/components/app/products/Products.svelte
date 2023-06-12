@@ -23,7 +23,7 @@
 <style>
 	.products {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 		gap: 1rem;
 	}
 	article {
@@ -41,9 +41,10 @@
 		border-radius: var(--border-radius);
 	}
 	img {
-		height: 130%;
-		width: 130%;
-		object-fit: cover;
+		height: 100%;
+		width: 100%;
+		object-fit: scale-down;
+		object-position: 50% 50%;
 		transition: transform 0.2s ease;
 	}
 

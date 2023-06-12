@@ -19,6 +19,10 @@ export async function POST({ request }) {
     },
   });
 
+  function roundToTwoDecimalPlaces(value) {
+    return Math.round(value * 100) / 100;
+  }
+
   if (!prices) {
     data.error =
       "Couldnt find products, please try again, and if problem persist please contact us!";
@@ -50,58 +54,54 @@ export async function POST({ request }) {
     data.shipping.cost = 5;
 
     if (data.promo.valid) {
-      data.total.with_tax = (
+      data.total.with_tax = roundToTwoDecimalPlaces(
         data.total.with_tax -
-        data.total.with_tax * (data.promo.discount / 100) +
-        data.shipping.cost
+          data.total.with_tax * (data.promo.discount / 100) +
+          data.shipping.cost
       ).toFixed(2);
 
-      data.total.without_tax = (
-        data.total.with_tax -
-        data.total.with_tax * 0.21
+      data.total.without_tax = roundToTwoDecimalPlaces(
+        data.total.with_tax - data.total.with_tax * 0.21
       ).toFixed(2);
     } else {
-      data.total.with_tax = (data.total.with_tax + data.shipping.cost).toFixed(
-        2
-      );
+      data.total.with_tax = roundToTwoDecimalPlaces(
+        data.total.with_tax + data.shipping.cost
+      ).toFixed(2);
 
-      data.total.without_tax = (
-        data.total.with_tax -
-        data.total.with_tax * 0.21
+      data.total.without_tax = roundToTwoDecimalPlaces(
+        data.total.with_tax - data.total.with_tax * 0.21
       ).toFixed(2);
     }
   } else if (data.shipping.type === "post") {
     data.shipping.cost = 10;
     if (data.promo.valid) {
-      data.total.with_tax = (
+      data.total.with_tax = roundToTwoDecimalPlaces(
         data.total.with_tax -
-        data.total.with_tax * (data.promo.discount / 100) +
-        data.shipping.cost
+          data.total.with_tax * (data.promo.discount / 100) +
+          data.shipping.cost
       ).toFixed(2);
 
-      data.total.without_tax = (
-        data.total.with_tax -
-        data.total.with_tax * 0.21
+      data.total.without_tax = roundToTwoDecimalPlaces(
+        data.total.with_tax - data.total.with_tax * 0.21
       ).toFixed(2);
     } else {
-      data.total.with_tax = (data.total.with_tax + data.shipping.cost).toFixed(
-        2
-      );
+      data.total.with_tax = (data.total.with_tax + data.shipping.cost)
+        .toFixed(2)
+        .toFixed(2);
 
-      data.total.without_tax = (
-        data.total.with_tax -
-        data.total.with_tax * 0.21
+      data.total.without_tax = roundToTwoDecimalPlaces(
+        data.total.with_tax - data.total.with_tax * 0.21
       ).toFixed(2);
     }
   }
 
   if (data.client.type === "private") {
     await stripe.paymentIntents.update(data.stripe.id, {
-      amount: (data.total.with_tax * 100).toFixed(0),
+      amount: roundToTwoDecimalPlaces(data.total.with_tax * 100),
     });
   } else if (data.client.type === "legal") {
     await stripe.paymentIntents.update(data.stripe.id, {
-      amount: (data.total.without_tax * 100).toFixed(0),
+      amount: roundToTwoDecimalPlaces(data.total.without_tax * 100),
     });
   }
 
